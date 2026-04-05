@@ -34,7 +34,7 @@ st.title("⚖ Toxicity Fairness Benchmark")
 st.caption(
     "Comparing Perspective API, Gemini, and Claude across gender, race, "
     "and age using real-world toxicity datasets. "
-    "[View source on GitHub](https://github.com/yourusername/AI-Bias)"
+    "[View source on GitHub](https://github.com/lydsleepy/AI-Bias)"
 )
 
 RESULTS_PATH = Path("results/raw_results.parquet")
