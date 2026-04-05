@@ -10,7 +10,7 @@ you generate by running the benchmark.
 
    ```bash
    python scripts/run_benchmark.py --sample 1000 \
-       --models perspective gemini claude \
+       --models perspective claude \
        --output results/
    ```
 
