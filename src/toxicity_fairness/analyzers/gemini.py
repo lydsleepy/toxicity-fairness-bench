@@ -30,7 +30,7 @@ class GeminiAnalyzer(BaseAnalyzer):
     constant to make experimentation easy. See docs/prompt_design.md.
     """
 
-    def __init__(self, model_id: str = "gemini-2.0-flash-lite") -> None:
+    def __init__(self, model_id: str = "gemini-2.5-flash-lite") -> None:
         super().__init__(model_name=f"gemini/{model_id}")
         self._client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
         self._model_id = model_id
