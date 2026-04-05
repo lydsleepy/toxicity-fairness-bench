@@ -76,9 +76,17 @@ def load_hatexplain(
     )
     df = ds.to_pandas()
 
+    # ClassLabel features may be decoded as ints (0=hatespeech, 1=normal,
+    # 2=offensive) or strings depending on the datasets library version.
+    _int_to_label: dict[int, str] = {0: "hatespeech", 1: "normal", 2: "offensive"}
+
     rows = []
     for _, row in df.iterrows():
-        label_votes: list[str] = row["annotators"]["label"]
+        raw_votes = row["annotators"]["label"]
+        label_votes: list[str] = [
+            _int_to_label[v] if isinstance(v, (int, float)) else v
+            for v in raw_votes
+        ]
         majority = max(set(label_votes), key=label_votes.count)
         actual = "non-toxic" if majority == "normal" else "toxic"
 

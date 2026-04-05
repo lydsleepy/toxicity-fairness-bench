@@ -45,17 +45,15 @@ def results_to_df(
     results: list[AnalysisResult],
     source_df: pd.DataFrame,
 ) -> pd.DataFrame:
-    result_df = pd.DataFrame([
-        {
-            "text": r.text,
-            "predicted_label": r.label,
-            "score": r.score,
-            "model": r.model,
-            "error": r.error,
-        }
-        for r in results
-    ])
-    return source_df.merge(result_df, on="text", how="left")
+    # Results are returned in the same order as source_df (analyze_batch
+    # preserves input order). Use positional assignment to avoid row
+    # duplication when duplicate texts exist in the dataset.
+    out = source_df.copy()
+    out["predicted_label"] = [r.label for r in results]
+    out["score"] = [r.score for r in results]
+    out["model"] = [r.model for r in results]
+    out["error"] = [r.error for r in results]
+    return out
 
 
 def main() -> None:

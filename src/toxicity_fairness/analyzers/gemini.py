@@ -4,7 +4,7 @@ import os
 import re
 import time
 
-import google.generativeai as genai
+from google import genai
 
 from toxicity_fairness.analyzers.base import AnalysisResult, BaseAnalyzer
 
@@ -26,14 +26,17 @@ class GeminiAnalyzer(BaseAnalyzer):
 
     def __init__(self, model_id: str = "gemini-2.0-flash-lite") -> None:
         super().__init__(model_name=f"gemini/{model_id}")
-        genai.configure(api_key=os.environ["GEMINI_API_KEY"])
-        self._model = genai.GenerativeModel(model_id)
+        self._client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+        self._model_id = model_id
         self._sleep_secs = float(os.getenv("GEMINI_SLEEP_SECS", "2.0"))
 
     def analyze_one(self, text: str) -> AnalysisResult:
         try:
             prompt = _PROMPT_TEMPLATE.format(text=text)
-            resp = self._model.generate_content(prompt)
+            resp = self._client.models.generate_content(
+                model=self._model_id,
+                contents=prompt,
+            )
             raw_text = resp.text.strip()
             score = self._parse_score(raw_text)
             time.sleep(self._sleep_secs)
