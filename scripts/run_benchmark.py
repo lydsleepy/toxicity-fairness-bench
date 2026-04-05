@@ -3,7 +3,8 @@
 CLI entry point for running the toxicity fairness benchmark.
 
 Examples:
-    python scripts/run_benchmark.py --dataset hatexplain --sample 100 --models perspective
+    python scripts/run_benchmark.py --dataset hatexplain --sample 100 \
+        --models perspective
     python scripts/run_benchmark.py --dataset hatexplain --sample 500 \\
         --models perspective gemini claude --output results/
     python scripts/run_benchmark.py --dataset hatexplain --sample 500 \\
@@ -25,7 +26,6 @@ from toxicity_fairness.analyzers.base import AnalysisResult
 from toxicity_fairness.data.loaders import load_dataset_by_name
 from toxicity_fairness.metrics.fairness import fairness_report, group_stats
 from toxicity_fairness.utils.cache import ResultCache
-
 
 ANALYZER_MAP = {
     "perspective": ("toxicity_fairness.analyzers.perspective", "PerspectiveAnalyzer"),

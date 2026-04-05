@@ -17,6 +17,7 @@ you generate by running the benchmark.
 2. Verify the dashboard runs locally:
 
    ```bash
+   source .venv/bin/activate   # activate the project venv first
    streamlit run scripts/dashboard.py
    ```
 

@@ -74,7 +74,7 @@ filtered_df = df[
 
 st.subheader("Overall accuracy")
 cols = st.columns(len(selected_models))
-for col, model in zip(cols, selected_models):
+for col, model in zip(cols, selected_models, strict=False):
     mdf = filtered_df[filtered_df["model"] == model]
     if len(mdf):
         acc = (mdf["actual_label"] == mdf["predicted_label"]).mean()
@@ -171,7 +171,9 @@ if st.button("Score") and user_text.strip():
         ("Claude",      "toxicity_fairness.analyzers.claude",
          "ClaudeAnalyzer"),
     ]
-    for col, (label, module_path, class_name) in zip(live_cols, model_configs):
+    for col, (label, module_path, class_name) in zip(
+        live_cols, model_configs, strict=False
+    ):
         try:
             import importlib
             mod = importlib.import_module(module_path)
