@@ -28,7 +28,7 @@ you generate by running the benchmark.
 2. **Go to [share.streamlit.io](https://share.streamlit.io)** and sign in with GitHub.
 
 3. **Click "New app"** and fill in:
-   - Repository: `lydsleepy/AI-Bias`
+   - Repository: `lydsleepy/toxicity-fairness-bench`
    - Branch: `main`
    - Main file path: `scripts/dashboard.py`
 

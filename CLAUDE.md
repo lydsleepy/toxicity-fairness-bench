@@ -169,7 +169,7 @@ streamlit run scripts/dashboard.py
 The dashboard reads `results/raw_results.parquet`. If that file doesn't exist
 it shows a warning and the live scorer still works. Deploy to Streamlit
 Community Cloud per `docs/deploy.md`; set `main file path` to
-`scripts/dashboard.py`. The repo name on GitHub is `lydsleepy/AI-Bias`.
+`scripts/dashboard.py`. The repo name on GitHub is `lydsleepy/toxicity-fairness-bench`.
 
 ---
 
@@ -269,7 +269,7 @@ Steps:
 3. `pytest tests/ --cov=src --cov-report=xml`
 4. Upload to Codecov (non-fatal if `CODECOV_TOKEN` secret is absent)
 
-**To add `CODECOV_TOKEN`:** go to codecov.io, connect the `lydsleepy/AI-Bias`
+**To add `CODECOV_TOKEN`:** go to codecov.io, connect the `lydsleepy/toxicity-fairness-bench`
 repo (free for public repos), copy the token, add it as a GitHub Actions
 secret named `CODECOV_TOKEN`. This enables the coverage badge.
 
@@ -290,7 +290,7 @@ secret named `CODECOV_TOKEN`. This enables the coverage badge.
 
 ## What still needs to be done (as of 2026-04-05)
 
-1. **Deploy the dashboard** — repo is on GitHub (`lydsleepy/AI-Bias`); connect
+1. **Deploy the dashboard** — repo is on GitHub (`lydsleepy/toxicity-fairness-bench`); connect
    at share.streamlit.io and add API keys as Streamlit Secrets. Update README
    badge with live URL.
 2. **Add Codecov token** — add `CODECOV_TOKEN` to GitHub Secrets for the

@@ -51,8 +51,8 @@ provides:
 
 ```bash
 # 1. Clone and install (requires Python 3.11+)
-git clone https://github.com/lydsleepy/AI-Bias.git
-cd AI-Bias
+git clone https://github.com/lydsleepy/toxicity-fairness-bench.git
+cd toxicity-fairness-bench
 pip install -e ".[dev]"
 
 # 2. Set up API keys
@@ -74,7 +74,7 @@ for guidance on free-tier quotas, then add `gemini` to `--models`.
 ## Project structure
 
 ```
-AI-Bias/
+toxicity-fairness-bench/
 ├── src/toxicity_fairness/
 │   ├── analyzers/          # One module per API
 │   │   ├── base.py         # Abstract base class
