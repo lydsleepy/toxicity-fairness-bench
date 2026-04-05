@@ -72,6 +72,7 @@ def load_hatexplain(
     ds = load_dataset(
         "hatexplain",
         split="train",
+        trust_remote_code=True,
         cache_dir=str(cache_dir) if cache_dir else None,
     )
     df = ds.to_pandas()
