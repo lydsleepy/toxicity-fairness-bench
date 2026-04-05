@@ -1,7 +1,8 @@
 .env
 __pycache__/
 *.pyc
-results/cache/
+*.egg-info/
+.venv/
+results/
 data/raw/
-*.parquet
 .DS_Store

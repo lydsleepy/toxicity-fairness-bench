@@ -58,7 +58,7 @@ cp .env.example .env
 # Edit .env with your keys (see "API Keys" section below)
 
 # 3. Run the benchmark on a small sample
-python scripts/run_benchmark.py --sample 200 --models perspective gemini
+python scripts/run_benchmark.py --sample 1000 --models perspective gemini claude
 
 # 4. Launch the dashboard
 streamlit run scripts/dashboard.py

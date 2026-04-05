@@ -60,7 +60,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Run toxicity fairness benchmark")
     parser.add_argument("--dataset",   default="hatexplain",
                         choices=["hatexplain", "jigsaw"])
-    parser.add_argument("--sample",    type=int, default=200)
+    parser.add_argument("--sample",    type=int, default=1000)
     parser.add_argument("--models",    nargs="+", default=["perspective"],
                         choices=list(ANALYZER_MAP))
     parser.add_argument("--output",    default="results/")
