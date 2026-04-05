@@ -1,31 +1,36 @@
 # toxicity-fairness-bench
 
 A fairness evaluation framework for commercial toxicity detection APIs,
-benchmarked across gender, race, and age using real-world datasets.
+benchmarked across gender, race, and religion using real-world datasets.
 
-Compares **Google Perspective API**, **Google Gemini**, and **Anthropic Claude**
-across multiple protected attributes, reporting standard fairness metrics
-(equalized odds, demographic parity, FPR parity) alongside accuracy.
+Compares **Google Perspective API** and **Anthropic Claude** across multiple
+protected attributes, reporting standard fairness metrics (equalized odds,
+demographic parity, FPR parity) alongside accuracy. Google Gemini is
+supported by the framework but excluded from the published benchmark run
+due to free-tier rate limits — see [docs/gemini-rate-limits.md](docs/gemini-rate-limits.md).
 
-> **Live demo →** [your-app.streamlit.app](https://your-app.streamlit.app)
-> *(deploy instructions below)*
+> **Run locally:** `streamlit run scripts/dashboard.py`
+> **Deploy to Streamlit Cloud:** see [docs/deploy.md](docs/deploy.md) for 5-minute instructions.
 
 ---
 
 ## Key findings
 
-| Model | Overall Accuracy | Gender Gap | Race Gap | Age Gap |
+| Model | Overall Accuracy | Gender Gap | Race Gap | Religion Gap |
 |---|---|---|---|---|
-| Perspective API | 62% | 10 pp | 18 pp | 12 pp |
-| Gemini 2.0 Flash | 87% | 5 pp | 9 pp | 7 pp |
-| Claude Sonnet | TBD | TBD | TBD | TBD |
+| Perspective API | 61% | 16 pp | 57 pp | 44 pp |
+| Claude Haiku | 66% | 9 pp | 26 pp | 21 pp |
 
 *"Gap" = max accuracy difference between any two subgroups within that
-attribute. Smaller is fairer. Fill in Claude column after running the
-benchmark.*
+attribute (95% bootstrap CI). Smaller = fairer. Dataset: HateXplain,
+1,000-sample draw. Claude achieves both higher accuracy and smaller
+fairness gaps across all three attributes.*
+
+*Google Gemini is supported but excluded from this run — see
+[docs/gemini-rate-limits.md](docs/gemini-rate-limits.md).*
 
 See [`notebooks/analysis.ipynb`](notebooks/analysis.ipynb) for full
-confusion matrices, calibration curves, and statistical significance tests.
+confusion matrices, equalized odds plots, and per-subgroup breakdowns.
 
 ---
 
@@ -35,20 +40,17 @@ Commercial content moderation APIs are widely deployed, yet their fairness
 properties across demographic groups are poorly understood. This project
 provides:
 
-- **Reproducible benchmarks** on established datasets (HateXplain)
-- **Intersectional analysis** — not just per-attribute, but across
-  attribute combinations
-- **Multiple fairness criteria** — because optimizing for one can hurt
-  another
-- **Actionable prompt interventions** — testing whether rephrasing API
-  prompts reduces bias
+- **Reproducible benchmarks** on established datasets (HateXplain, 20k samples)
+- **Per-attribute analysis** — Gender, Race/Ethnicity, Religion independently
+- **Multiple fairness criteria** — because optimizing for one can hurt another
+- **Real-world API comparison** — purpose-built classifier vs. prompted LLM
 
 ---
 
 ## Quickstart
 
 ```bash
-# 1. Clone and install
+# 1. Clone and install (requires Python 3.11+)
 git clone https://github.com/lydsleepy/AI-Bias.git
 cd AI-Bias
 pip install -e ".[dev]"
@@ -57,12 +59,15 @@ pip install -e ".[dev]"
 cp .env.example .env
 # Edit .env with your keys (see "API Keys" section below)
 
-# 3. Run the benchmark on a small sample
-python scripts/run_benchmark.py --sample 1000 --models perspective gemini claude
+# 3. Run the benchmark on a sample
+python scripts/run_benchmark.py --sample 1000 --models perspective claude
 
 # 4. Launch the dashboard
 streamlit run scripts/dashboard.py
 ```
+
+To include Gemini, first read [docs/gemini-rate-limits.md](docs/gemini-rate-limits.md)
+for guidance on free-tier quotas, then add `gemini` to `--models`.
 
 ---
 
@@ -74,14 +79,14 @@ AI-Bias/
 │   ├── analyzers/          # One module per API
 │   │   ├── base.py         # Abstract base class
 │   │   ├── perspective.py
-│   │   ├── gemini.py
+│   │   ├── gemini.py       # Gemini 2.5 Flash Lite (see rate-limit notes)
 │   │   └── claude.py
 │   ├── metrics/            # Fairness metric implementations
 │   │   └── fairness.py
 │   ├── data/               # Dataset loaders
 │   │   └── loaders.py
 │   └── utils/
-│       └── cache.py
+│       └── cache.py        # Parquet cache to avoid redundant API calls
 ├── tests/                  # pytest unit tests (no API keys needed)
 ├── notebooks/
 │   ├── bias_analysis.ipynb # Original class assignment (preserved)
@@ -100,7 +105,7 @@ AI-Bias/
 | API | URL | Free tier |
 |---|---|---|
 | Google Perspective | [perspectiveapi.com](https://perspectiveapi.com) | Yes (1 QPS) |
-| Google Gemini | [aistudio.google.com](https://aistudio.google.com) | Yes |
+| Google Gemini | [aistudio.google.com](https://aistudio.google.com) | Yes — see [rate limit notes](docs/gemini-rate-limits.md) |
 | Anthropic Claude | [console.anthropic.com](https://console.anthropic.com) | Pay-as-you-go |
 
 Copy `.env.example` to `.env` and fill in your keys. Keys are never
@@ -114,8 +119,8 @@ committed — `.env` is in `.gitignore`.
 |---|---|---|
 | HateXplain | 20k | CC BY 4.0 |
 
-HateXplain downloads automatically via HuggingFace. See
-[`docs/datasets.md`](docs/datasets.md) for full setup instructions.
+HateXplain downloads automatically via HuggingFace (`trust_remote_code=True`
+required; pin `datasets<3.0` — see [docs/datasets.md](docs/datasets.md)).
 
 The original 40-row hand-labeled dataset from the class assignment is
 preserved at `data.csv` for reference.
@@ -133,6 +138,10 @@ For each (model, protected attribute) pair:
 - **Demographic Parity** — difference in positive prediction rates
 - All metrics include 95% bootstrap confidence intervals
 
+Note: HateXplain is a hate-speech dataset; most subgroup samples are
+labeled toxic, so FPR is undefined for groups with no non-toxic examples.
+See the notebook for full discussion of dataset limitations.
+
 ---
 
 ## Running tests
@@ -148,8 +157,8 @@ CI runs automatically on every push via GitHub Actions.
 
 ## Tech stack
 
-Python 3.11 · pandas · scikit-learn · anthropic · google-generativeai ·
-googleapiclient · streamlit · plotly · pytest · GitHub Actions
+Python 3.11 · pandas · scikit-learn · anthropic · google-genai ·
+google-api-python-client · streamlit · plotly · tenacity · pytest · GitHub Actions
 
 ---
 
