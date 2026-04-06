@@ -31,7 +31,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# ── Apple / Liquid-glass theme ─────────────────────────────────────────────────
+# ── Liquid-glass theme: pastel pinks, greys, blues ────────────────────────────
 _CSS = """
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap');
 
@@ -40,81 +40,88 @@ _CSS = """
     --glass-border   : rgba(255, 255, 255, 0.55);
     --glass-shadow   : 0 2px 20px rgba(0,0,0,0.06), 0 0 0 0.5px rgba(0,0,0,0.04);
     --radius         : 18px;
-    --blue           : #007AFF;
-    --green          : #30D158;
-    --text-primary   : #1d1d1f;
+    --accent         : #8AAFC4;
+    --text-primary   : #2c2c2e;
     --text-secondary : #6e6e73;
-    --text-tertiary  : #86868b;
+    --text-tertiary  : #98989d;
     --font           : 'DM Sans', -apple-system, BlinkMacSystemFont,
                        'Helvetica Neue', sans-serif;
 }
 
-/* ── strip Streamlit chrome ── */
-#MainMenu,
+/* ── strip Streamlit chrome, keep sidebar toggle ── */
 footer,
 [data-testid="stToolbar"],
 [data-testid="stDecoration"] { display: none !important; }
 
+#MainMenu { visibility: hidden !important; }
+
+/* Keep header present so sidebar toggle stays accessible, just transparent */
 [data-testid="stHeader"] {
     background : transparent !important;
-    height     : 0 !important;
 }
 
-/* ── app background: liquid blobs ── */
+/* Ensure sidebar collapse/expand controls are always visible */
+[data-testid="stSidebarCollapsedControl"],
+[data-testid="stSidebarCollapseButton"] {
+    display    : flex !important;
+    visibility : visible !important;
+    opacity    : 1 !important;
+}
+
+/* ── app background: pastel blobs ── */
 .stApp {
     background:
-        radial-gradient(ellipse 70% 55% at 8% 20%,
-            rgba(0,122,255,0.09) 0%, transparent 65%),
-        radial-gradient(ellipse 55% 65% at 92% 80%,
-            rgba(48,209,88,0.07) 0%, transparent 65%),
-        radial-gradient(ellipse 80% 40% at 50% 105%,
-            rgba(94,92,230,0.06) 0%, transparent 60%),
+        radial-gradient(ellipse 65% 50% at 10% 18%,
+            rgba(138,175,196,0.18) 0%, transparent 65%),
+        radial-gradient(ellipse 55% 60% at 90% 82%,
+            rgba(212,168,184,0.16) 0%, transparent 65%),
+        radial-gradient(ellipse 75% 40% at 50% 108%,
+            rgba(196,184,208,0.14) 0%, transparent 60%),
         #f5f5f7;
-    font-family          : var(--font) !important;
+    font-family           : var(--font) !important;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
 
-/* ── global typography reset ── */
+/* ── global typography ── */
 *, *::before, *::after {
-    font-family  : var(--font) !important;
+    font-family   : var(--font) !important;
     letter-spacing: -0.01em;
 }
 
 /* ── main content padding ── */
 [data-testid="block-container"] {
-    padding    : 2.5rem 3rem 4rem !important;
-    max-width  : 1400px;
+    padding   : 2rem 2.75rem 4rem !important;
+    max-width : 1400px;
 }
 
 /* ── sidebar: frosted glass panel ── */
 section[data-testid="stSidebar"] {
-    background         : rgba(245,245,247,0.70) !important;
-    backdrop-filter    : blur(28px) saturate(1.8) !important;
-    -webkit-backdrop-filter: blur(28px) saturate(1.8) !important;
-    border-right       : 0.5px solid rgba(0,0,0,0.08) !important;
-    box-shadow         : 2px 0 24px rgba(0,0,0,0.04) !important;
+    background              : rgba(248,247,250,0.78) !important;
+    backdrop-filter         : blur(28px) saturate(1.6) !important;
+    -webkit-backdrop-filter : blur(28px) saturate(1.6) !important;
+    border-right            : 0.5px solid rgba(0,0,0,0.07) !important;
+    box-shadow              : 2px 0 20px rgba(0,0,0,0.04) !important;
 }
 
 section[data-testid="stSidebar"] > div {
-    padding-top: 2.25rem !important;
+    padding-top: 1.75rem !important;
 }
 
-/* sidebar labels: small-caps style */
 section[data-testid="stSidebar"] h1,
 section[data-testid="stSidebar"] h2,
 section[data-testid="stSidebar"] h3 {
-    font-size      : 0.68rem !important;
+    font-size      : 0.65rem !important;
     font-weight    : 600 !important;
     text-transform : uppercase !important;
-    letter-spacing : 0.09em !important;
+    letter-spacing : 0.1em !important;
     color          : var(--text-tertiary) !important;
-    margin-bottom  : 1rem !important;
+    margin-bottom  : 0.85rem !important;
 }
 
 /* ── headings ── */
 h1 {
-    font-size      : 1.9rem !important;
+    font-size      : 1.85rem !important;
     font-weight    : 600 !important;
     color          : var(--text-primary) !important;
     letter-spacing : -0.045em !important;
@@ -123,57 +130,57 @@ h1 {
 }
 
 h2, h3 {
-    font-size      : 0.95rem !important;
+    font-size      : 0.9rem !important;
     font-weight    : 500 !important;
     color          : var(--text-secondary) !important;
     letter-spacing : -0.02em !important;
-    margin-top     : 2.25rem !important;
-    margin-bottom  : 0.75rem !important;
-    padding-bottom : 0.5rem !important;
-    border-bottom  : 0.5px solid rgba(0,0,0,0.08) !important;
+    margin-top     : 2rem !important;
+    margin-bottom  : 0.65rem !important;
+    padding-bottom : 0.45rem !important;
+    border-bottom  : 0.5px solid rgba(0,0,0,0.07) !important;
 }
 
 /* ── captions ── */
 .stCaption p,
 [data-testid="stCaptionContainer"] p {
     color          : var(--text-tertiary) !important;
-    font-size      : 0.78rem !important;
+    font-size      : 0.76rem !important;
     font-weight    : 400 !important;
     letter-spacing : -0.005em !important;
 }
 
 /* ── links ── */
-a { color: var(--blue) !important; text-decoration: none !important; }
+a { color: var(--accent) !important; text-decoration: none !important; }
 a:hover { text-decoration: underline !important; }
 
-/* ── metric tiles: glass cards ── */
+/* ── metric tiles ── */
 [data-testid="metric-container"] {
-    background         : var(--glass) !important;
-    backdrop-filter    : blur(20px) saturate(1.6) !important;
-    -webkit-backdrop-filter: blur(20px) saturate(1.6) !important;
-    border             : 0.5px solid var(--glass-border) !important;
-    border-radius      : var(--radius) !important;
-    box-shadow         : var(--glass-shadow) !important;
-    padding            : 1.25rem 1.5rem !important;
-    transition         : transform 0.18s ease, box-shadow 0.18s ease !important;
+    background              : var(--glass) !important;
+    backdrop-filter         : blur(20px) saturate(1.5) !important;
+    -webkit-backdrop-filter : blur(20px) saturate(1.5) !important;
+    border                  : 0.5px solid var(--glass-border) !important;
+    border-radius           : var(--radius) !important;
+    box-shadow              : var(--glass-shadow) !important;
+    padding                 : 1.2rem 1.5rem !important;
+    transition              : transform 0.18s ease, box-shadow 0.18s ease !important;
 }
 
 [data-testid="metric-container"]:hover {
     transform  : translateY(-2px) !important;
-    box-shadow : 0 8px 32px rgba(0,0,0,0.10),
+    box-shadow : 0 8px 32px rgba(0,0,0,0.08),
                  0 0 0 0.5px rgba(0,0,0,0.04) !important;
 }
 
 [data-testid="metric-container"] label {
-    font-size      : 0.70rem !important;
+    font-size      : 0.68rem !important;
     font-weight    : 600 !important;
     text-transform : uppercase !important;
-    letter-spacing : 0.07em !important;
+    letter-spacing : 0.08em !important;
     color          : var(--text-tertiary) !important;
 }
 
 [data-testid="metric-container"] [data-testid="stMetricValue"] {
-    font-size      : 2.1rem !important;
+    font-size      : 2rem !important;
     font-weight    : 300 !important;
     color          : var(--text-primary) !important;
     letter-spacing : -0.045em !important;
@@ -182,45 +189,45 @@ a:hover { text-decoration: underline !important; }
 
 /* ── plotly chart containers ── */
 [data-testid="stPlotlyChart"] > div {
-    background         : var(--glass) !important;
-    backdrop-filter    : blur(20px) !important;
-    -webkit-backdrop-filter: blur(20px) !important;
-    border             : 0.5px solid var(--glass-border) !important;
-    border-radius      : var(--radius) !important;
-    box-shadow         : var(--glass-shadow) !important;
-    padding            : 1rem 0.5rem 0.25rem !important;
-    overflow           : hidden !important;
+    background              : var(--glass) !important;
+    backdrop-filter         : blur(20px) !important;
+    -webkit-backdrop-filter : blur(20px) !important;
+    border                  : 0.5px solid var(--glass-border) !important;
+    border-radius           : var(--radius) !important;
+    box-shadow              : var(--glass-shadow) !important;
+    padding                 : 0.75rem 0.5rem 0.25rem !important;
+    overflow                : hidden !important;
 }
 
 /* ── dataframe ── */
 [data-testid="stDataFrame"],
 [data-testid="stDataFrameResizable"] {
-    background         : var(--glass) !important;
-    backdrop-filter    : blur(20px) !important;
-    -webkit-backdrop-filter: blur(20px) !important;
-    border             : 0.5px solid var(--glass-border) !important;
-    border-radius      : var(--radius) !important;
-    box-shadow         : var(--glass-shadow) !important;
-    overflow           : hidden !important;
+    background              : var(--glass) !important;
+    backdrop-filter         : blur(20px) !important;
+    -webkit-backdrop-filter : blur(20px) !important;
+    border                  : 0.5px solid var(--glass-border) !important;
+    border-radius           : var(--radius) !important;
+    box-shadow              : var(--glass-shadow) !important;
+    overflow                : hidden !important;
 }
 
-/* ── button: Apple pill style ── */
+/* ── button: muted pill ── */
 .stButton > button {
-    background    : var(--blue) !important;
+    background    : var(--accent) !important;
     color         : #fff !important;
     border        : none !important;
     border-radius : 980px !important;
-    padding       : 0.55rem 1.8rem !important;
+    padding       : 0.52rem 1.75rem !important;
     font-size     : 0.875rem !important;
     font-weight   : 500 !important;
     letter-spacing: -0.01em !important;
     cursor        : pointer !important;
     transition    : opacity 0.15s ease, transform 0.15s ease !important;
-    box-shadow    : 0 1px 8px rgba(0,122,255,0.32) !important;
+    box-shadow    : 0 1px 8px rgba(138,175,196,0.40) !important;
 }
 
 .stButton > button:hover {
-    opacity   : 0.86 !important;
+    opacity   : 0.84 !important;
     transform : translateY(-1px) !important;
 }
 
@@ -232,49 +239,54 @@ a:hover { text-decoration: underline !important; }
 /* ── text area ── */
 .stTextArea textarea {
     background    : rgba(255,255,255,0.92) !important;
-    border        : 0.5px solid rgba(0,0,0,0.12) !important;
+    border        : 0.5px solid rgba(0,0,0,0.11) !important;
     border-radius : 12px !important;
     font-size     : 0.9rem !important;
     color         : var(--text-primary) !important;
-    box-shadow    : 0 1px 4px rgba(0,0,0,0.04) inset !important;
+    box-shadow    : 0 1px 4px rgba(0,0,0,0.03) inset !important;
     transition    : border-color 0.15s ease, box-shadow 0.15s ease !important;
     padding       : 0.75rem 1rem !important;
     resize        : vertical !important;
 }
 
 .stTextArea textarea:focus {
-    border-color : var(--blue) !important;
-    box-shadow   : 0 0 0 3px rgba(0,122,255,0.12) !important;
+    border-color : var(--accent) !important;
+    box-shadow   : 0 0 0 3px rgba(138,175,196,0.18) !important;
     outline      : none !important;
 }
 
 .stTextArea label {
-    font-size      : 0.78rem !important;
+    font-size      : 0.76rem !important;
     font-weight    : 500 !important;
     color          : var(--text-secondary) !important;
-    letter-spacing : 0.01em !important;
 }
 
-/* ── selects ── */
-.stSelectbox > div > div,
-.stMultiSelect > div > div {
+/* ── selectbox ── */
+.stSelectbox > div > div {
     background    : rgba(255,255,255,0.92) !important;
-    border        : 0.5px solid rgba(0,0,0,0.12) !important;
+    border        : 0.5px solid rgba(0,0,0,0.11) !important;
     border-radius : 10px !important;
     font-size     : 0.875rem !important;
+}
+
+/* ── checkboxes ── */
+.stCheckbox label {
+    font-size   : 0.875rem !important;
+    color       : var(--text-secondary) !important;
+    font-weight : 400 !important;
 }
 
 /* ── divider ── */
 hr {
     border     : none !important;
-    border-top : 0.5px solid rgba(0,0,0,0.09) !important;
-    margin     : 2rem 0 !important;
+    border-top : 0.5px solid rgba(0,0,0,0.08) !important;
+    margin     : 1.75rem 0 !important;
 }
 
 /* ── alert / warning ── */
 [data-testid="stAlert"] {
-    background    : rgba(255,159,10,0.08) !important;
-    border        : 0.5px solid rgba(255,159,10,0.28) !important;
+    background    : rgba(212,168,184,0.12) !important;
+    border        : 0.5px solid rgba(212,168,184,0.35) !important;
     border-radius : 12px !important;
     color         : var(--text-primary) !important;
 }
@@ -287,14 +299,14 @@ hr {
 
 st.markdown(f"<style>{_CSS}</style>", unsafe_allow_html=True)
 
-# ── Apple color palette for charts ────────────────────────────────────────────
-_APPLE_COLORS = [
-    "#007AFF",  # blue
-    "#30D158",  # green
-    "#FF9F0A",  # orange
-    "#FF375F",  # pink
-    "#5E5CE6",  # indigo
-    "#40C8E0",  # teal
+# ── Pastel chart palette: pinks, greys, blues ─────────────────────────────────
+_CHART_COLORS = [
+    "#8AAFC4",  # dusty blue     (Perspective)
+    "#C4899A",  # muted rose     (Claude)
+    "#A89BB8",  # soft lavender
+    "#7FA8BC",  # powder blue
+    "#B89AA8",  # warm mauve
+    "#9AADB8",  # blue-grey
 ]
 
 _FONT = "DM Sans, -apple-system, BlinkMacSystemFont, Helvetica Neue, sans-serif"
@@ -305,25 +317,25 @@ def _chart_layout(**overrides) -> dict:
     base = dict(
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
-        font=dict(family=_FONT, color="#1d1d1f", size=12),
+        font=dict(family=_FONT, color="#2c2c2e", size=12),
         margin=dict(l=8, r=8, t=28, b=8),
         xaxis=dict(
-            gridcolor="rgba(0,0,0,0.05)",
-            linecolor="rgba(0,0,0,0.08)",
-            tickfont=dict(size=11, color="#86868b"),
+            gridcolor="rgba(0,0,0,0.04)",
+            linecolor="rgba(0,0,0,0.07)",
+            tickfont=dict(size=11, color="#98989d"),
             title_font=dict(size=11, color="#6e6e73"),
             zeroline=False,
         ),
         yaxis=dict(
-            gridcolor="rgba(0,0,0,0.05)",
+            gridcolor="rgba(0,0,0,0.04)",
             linecolor="rgba(0,0,0,0)",
-            tickfont=dict(size=11, color="#86868b"),
+            tickfont=dict(size=11, color="#98989d"),
             title_font=dict(size=11, color="#6e6e73"),
             zeroline=False,
         ),
         legend=dict(
-            bgcolor="rgba(255,255,255,0.55)",
-            bordercolor="rgba(0,0,0,0.06)",
+            bgcolor="rgba(255,255,255,0.50)",
+            bordercolor="rgba(0,0,0,0.05)",
             borderwidth=0.5,
             font=dict(size=11, color="#6e6e73"),
         ),
@@ -336,12 +348,12 @@ def _chart_layout(**overrides) -> dict:
 st.markdown(
     """
     <h1>Toxicity Fairness Benchmark</h1>
-    <p style="color:#6e6e73;font-size:0.88rem;margin-top:0.2rem;
+    <p style="color:#98989d;font-size:0.86rem;margin-top:0.2rem;
               margin-bottom:0;font-weight:400;letter-spacing:-0.01em;">
       Perspective API&nbsp;&nbsp;·&nbsp;&nbsp;Anthropic Claude&nbsp;&nbsp;·&nbsp;&nbsp;
       HateXplain dataset&nbsp;&nbsp;&nbsp;
       <a href="https://github.com/lydsleepy/toxicity-fairness-bench"
-         style="color:#007AFF;">GitHub ↗</a>
+         style="color:#8AAFC4;">GitHub ↗</a>
     </p>
     """,
     unsafe_allow_html=True,
@@ -373,10 +385,20 @@ if df is None:
 # ── Sidebar filters ───────────────────────────────────────────────────────────
 with st.sidebar:
     st.header("Filters")
+
     available_models = sorted(df["model"].unique())
-    selected_models = st.multiselect(
-        "Models", available_models, default=available_models
+    st.markdown(
+        "<p style='font-size:0.65rem;font-weight:600;text-transform:uppercase;"
+        "letter-spacing:0.1em;color:#98989d;margin-bottom:0.5rem;'>Models</p>",
+        unsafe_allow_html=True,
     )
+    selected_models = [
+        model
+        for model in available_models
+        if st.checkbox(model.split("/")[-1], value=True, key=f"chk_{model}")
+    ]
+
+    st.markdown("<div style='margin-top:1rem;'></div>", unsafe_allow_html=True)
     available_attrs = sorted(df["protected_attribute"].unique())
     selected_attr = st.selectbox("Protected attribute", available_attrs)
 
@@ -387,12 +409,13 @@ filtered_df = df[
 
 # ── Overall accuracy tiles ────────────────────────────────────────────────────
 st.subheader("Overall accuracy")
-cols = st.columns(len(selected_models))
-for col, model in zip(cols, selected_models, strict=False):
-    mdf = filtered_df[filtered_df["model"] == model]
-    if len(mdf):
-        acc = (mdf["actual_label"] == mdf["predicted_label"]).mean()
-        col.metric(model.split("/")[-1], f"{acc:.1%}")
+if selected_models:
+    cols = st.columns(len(selected_models))
+    for col, model in zip(cols, selected_models, strict=False):
+        mdf = filtered_df[filtered_df["model"] == model]
+        if len(mdf):
+            acc = (mdf["actual_label"] == mdf["predicted_label"]).mean()
+            col.metric(model.split("/")[-1], f"{acc:.1%}")
 
 # ── Accuracy by group ─────────────────────────────────────────────────────────
 st.subheader(f"Accuracy by {selected_attr} group")
@@ -420,22 +443,23 @@ if rows:
         barmode="group",
         text=bar_df["accuracy"].map("{:.0%}".format),
         labels={"accuracy": "Accuracy", "group": selected_attr, "model": "Model"},
-        color_discrete_sequence=_APPLE_COLORS,
+        color_discrete_sequence=_CHART_COLORS,
+        height=280,
     )
     fig.update_traces(
         textposition="outside",
-        textfont=dict(size=11, color="#6e6e73"),
+        textfont=dict(size=10, color="#98989d"),
         marker_line_width=0,
-        opacity=0.9,
+        opacity=0.85,
     )
     fig.update_layout(
         yaxis_tickformat=".0%",
-        yaxis_range=[0, 1.08],
-        bargap=0.22,
+        yaxis_range=[0, 1.12],
+        bargap=0.24,
         bargroupgap=0.06,
         **_chart_layout(),
     )
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
 # ── Fairness metrics table ────────────────────────────────────────────────────
 st.subheader("Fairness metrics")
@@ -450,14 +474,14 @@ st.dataframe(
             "fpr_gap": "{:.1%}",
         }
     ).background_gradient(
-        subset=["accuracy_gap", "dp_gap", "tpr_gap"], cmap="RdYlGn_r"
+        subset=["accuracy_gap", "dp_gap", "tpr_gap"], cmap="RdPu"
     ),
-    use_container_width=True,
+    width="stretch",
 )
 st.caption(
-    "**accuracy_gap** = max accuracy difference across subgroups. "
-    "**dp_gap** = demographic parity gap. "
-    "**tpr_gap / fpr_gap** = equalized odds gaps. Smaller is fairer."
+    "**accuracy_gap** = max accuracy difference across subgroups.  "
+    "**dp_gap** = demographic parity gap.  "
+    "**tpr_gap / fpr_gap** = equalized odds gaps.  Smaller is fairer."
 )
 
 # ── FPR vs FNR scatter ────────────────────────────────────────────────────────
@@ -486,23 +510,24 @@ if scatter_rows:
         color="model",
         text="group",
         size="n",
-        size_max=28,
+        size_max=26,
         labels={"fpr": "False Positive Rate", "fnr": "False Negative Rate"},
-        color_discrete_sequence=_APPLE_COLORS,
+        color_discrete_sequence=_CHART_COLORS,
+        height=320,
     )
     fig2.update_traces(
         textposition="top center",
-        textfont=dict(size=10, color="#86868b"),
+        textfont=dict(size=10, color="#98989d"),
         marker=dict(line=dict(width=0)),
-        opacity=0.88,
+        opacity=0.82,
     )
     fig2.add_shape(
         type="line",
         x0=0, y0=0, x1=1, y1=1,
-        line=dict(color="rgba(0,0,0,0.18)", dash="dot", width=1),
+        line=dict(color="rgba(0,0,0,0.14)", dash="dot", width=1),
     )
     fig2.update_layout(**_chart_layout())
-    st.plotly_chart(fig2, use_container_width=True)
+    st.plotly_chart(fig2, width="stretch")
     st.caption(
         "Points near the origin are better. "
         "Equal FPR and FNR across groups = equalized odds."
@@ -518,8 +543,11 @@ user_text = st.text_area("Text to score", placeholder="Enter any text…", heigh
 if st.button("Score") and user_text.strip():
     live_cols = st.columns(3)
     model_configs = [
-        ("Perspective", "toxicity_fairness.analyzers.perspective",
-         "PerspectiveAnalyzer"),
+        (
+            "Perspective",
+            "toxicity_fairness.analyzers.perspective",
+            "PerspectiveAnalyzer",
+        ),
         ("Gemini", "toxicity_fairness.analyzers.gemini", "GeminiAnalyzer"),
         ("Claude", "toxicity_fairness.analyzers.claude", "ClaudeAnalyzer"),
     ]
