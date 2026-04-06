@@ -48,24 +48,43 @@ _CSS = """
                        'Helvetica Neue', sans-serif;
 }
 
-/* ── strip Streamlit chrome, keep sidebar toggle ── */
-footer,
-[data-testid="stToolbar"],
+/* ── strip only decorative chrome, never hide interactive controls ── */
+footer { display: none !important; }
 [data-testid="stDecoration"] { display: none !important; }
 
-#MainMenu { visibility: hidden !important; }
-
-/* Keep header present so sidebar toggle stays accessible, just transparent */
-[data-testid="stHeader"] {
-    background : transparent !important;
+/* ── sidebar toggle buttons: Apple frosted glass circles ── */
+/* Collapse button (inside open sidebar) */
+[data-testid="stSidebarCollapseButton"] button {
+    background    : rgba(255,255,255,0.85) !important;
+    border        : 0.5px solid rgba(138,175,196,0.35) !important;
+    border-radius : 50% !important;
+    width         : 30px !important;
+    height        : 30px !important;
+    box-shadow    : 0 2px 10px rgba(0,0,0,0.09) !important;
+    transition    : box-shadow 0.18s ease, transform 0.15s ease !important;
+    color         : #6e6e73 !important;
 }
 
-/* Ensure sidebar collapse/expand controls are always visible */
-[data-testid="stSidebarCollapsedControl"],
-[data-testid="stSidebarCollapseButton"] {
-    display    : flex !important;
-    visibility : visible !important;
-    opacity    : 1 !important;
+[data-testid="stSidebarCollapseButton"] button:hover {
+    box-shadow : 0 4px 18px rgba(0,0,0,0.13) !important;
+    transform  : scale(1.06) !important;
+}
+
+/* Expand button (shown when sidebar is collapsed, testid changed in 1.56) */
+[data-testid="stSidebarCollapsed"] button {
+    background    : rgba(242,240,248,0.96) !important;
+    border        : 0.5px solid rgba(138,175,196,0.40) !important;
+    border-radius : 50% !important;
+    width         : 34px !important;
+    height        : 34px !important;
+    box-shadow    : 0 2px 14px rgba(0,0,0,0.12) !important;
+    transition    : box-shadow 0.18s ease, transform 0.15s ease !important;
+    color         : #6e6e73 !important;
+}
+
+[data-testid="stSidebarCollapsed"] button:hover {
+    box-shadow : 0 5px 20px rgba(0,0,0,0.15) !important;
+    transform  : scale(1.06) !important;
 }
 
 /* ── app background: pastel blobs ── */
@@ -95,13 +114,11 @@ footer,
     max-width : 1400px;
 }
 
-/* ── sidebar: frosted glass panel ── */
+/* ── sidebar: solid pastel panel (avoid invisible-via-transparency bug) ── */
 section[data-testid="stSidebar"] {
-    background              : rgba(248,247,250,0.78) !important;
-    backdrop-filter         : blur(28px) saturate(1.6) !important;
-    -webkit-backdrop-filter : blur(28px) saturate(1.6) !important;
-    border-right            : 0.5px solid rgba(0,0,0,0.07) !important;
-    box-shadow              : 2px 0 20px rgba(0,0,0,0.04) !important;
+    background   : #f0eef6 !important;
+    border-right : 0.5px solid rgba(138,175,196,0.22) !important;
+    box-shadow   : 2px 0 16px rgba(0,0,0,0.05) !important;
 }
 
 section[data-testid="stSidebar"] > div {
