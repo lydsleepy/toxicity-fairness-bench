@@ -52,39 +52,67 @@ _CSS = """
 footer { display: none !important; }
 [data-testid="stDecoration"] { display: none !important; }
 
-/* ── sidebar toggle buttons: Apple frosted glass circles ── */
-/* Collapse button (inside open sidebar) */
-[data-testid="stSidebarCollapseButton"] button {
-    background    : rgba(255,255,255,0.85) !important;
-    border        : 0.5px solid rgba(138,175,196,0.35) !important;
-    border-radius : 50% !important;
-    width         : 30px !important;
-    height        : 30px !important;
-    box-shadow    : 0 2px 10px rgba(0,0,0,0.09) !important;
-    transition    : box-shadow 0.18s ease, transform 0.15s ease !important;
-    color         : #6e6e73 !important;
-}
-
-[data-testid="stSidebarCollapseButton"] button:hover {
-    box-shadow : 0 4px 18px rgba(0,0,0,0.13) !important;
-    transform  : scale(1.06) !important;
-}
-
-/* Expand button (shown when sidebar is collapsed, testid changed in 1.56) */
+/* ── sidebar toggle: liquid glass hamburger circle ── */
+[data-testid="stSidebarCollapseButton"] button,
 [data-testid="stSidebarCollapsed"] button {
-    background    : rgba(242,240,248,0.96) !important;
-    border        : 0.5px solid rgba(138,175,196,0.40) !important;
-    border-radius : 50% !important;
-    width         : 34px !important;
-    height        : 34px !important;
-    box-shadow    : 0 2px 14px rgba(0,0,0,0.12) !important;
-    transition    : box-shadow 0.18s ease, transform 0.15s ease !important;
-    color         : #6e6e73 !important;
+    position        : relative !important;
+    width           : 36px !important;
+    height          : 36px !important;
+    border-radius   : 50% !important;
+    padding         : 0 !important;
+    /* liquid glass: white-to-lavender gradient + inner highlight */
+    background      : linear-gradient(145deg,
+                        rgba(255,255,255,0.97) 0%,
+                        rgba(236,232,248,0.90) 100%) !important;
+    border          : 0.5px solid rgba(255,255,255,0.80) !important;
+    box-shadow      : 0 2px 12px rgba(0,0,0,0.10),
+                      0 0 0 0.5px rgba(138,175,196,0.22),
+                      inset 0 1px 0 rgba(255,255,255,0.95) !important;
+    cursor          : pointer !important;
+    display         : flex !important;
+    align-items     : center !important;
+    justify-content : center !important;
+    transition      : box-shadow 0.18s ease, transform 0.16s ease !important;
+    overflow        : visible !important;
 }
 
+/* Hide the native chevron/arrow SVG */
+[data-testid="stSidebarCollapseButton"] button svg,
+[data-testid="stSidebarCollapsed"] button svg {
+    display: none !important;
+}
+
+/* Three-line hamburger via box-shadow on a single ::before pseudo-element.
+   Math: 2px line + 1.5px gap + 2px line + 1.5px gap + 2px line = 9px total.
+   translate(-50%, calc(-50% - 3.5px)) centers the block in the button. */
+[data-testid="stSidebarCollapseButton"] button::before,
+[data-testid="stSidebarCollapsed"] button::before {
+    content       : '' !important;
+    display       : block !important;
+    position      : absolute !important;
+    width         : 14px !important;
+    height        : 2px !important;
+    background    : #8c8c96 !important;
+    border-radius : 1px !important;
+    top           : 50% !important;
+    left          : 50% !important;
+    transform     : translate(-50%, calc(-50% - 3.5px)) !important;
+    box-shadow    : 0 3.5px 0 #8c8c96, 0 7px 0 #8c8c96 !important;
+    transition    : background 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+[data-testid="stSidebarCollapseButton"] button:hover,
 [data-testid="stSidebarCollapsed"] button:hover {
-    box-shadow : 0 5px 20px rgba(0,0,0,0.15) !important;
-    transform  : scale(1.06) !important;
+    box-shadow : 0 5px 22px rgba(0,0,0,0.14),
+                 0 0 0 0.5px rgba(138,175,196,0.35),
+                 inset 0 1px 0 rgba(255,255,255,0.95) !important;
+    transform  : scale(1.07) !important;
+}
+
+[data-testid="stSidebarCollapseButton"] button:hover::before,
+[data-testid="stSidebarCollapsed"] button:hover::before {
+    background : #2c2c2e !important;
+    box-shadow : 0 3.5px 0 #2c2c2e, 0 7px 0 #2c2c2e !important;
 }
 
 /* ── app background: pastel blobs ── */
