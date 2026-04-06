@@ -52,7 +52,23 @@ _CSS = """
 footer { display: none !important; }
 [data-testid="stDecoration"] { display: none !important; }
 
-/* ── sidebar toggle: liquid glass hamburger circle ── */
+/* ── sidebar toggle: always-visible liquid glass hamburger ── */
+
+/* Override Streamlit's hover-only opacity on the sidebar header
+   (default: opacity:0, only shown on .stSidebar:hover) */
+[data-testid="stSidebarHeader"] {
+    opacity    : 1 !important;
+    visibility : visible !important;
+}
+
+/* Ensure the collapsed-state expand button is always rendered */
+[data-testid="stSidebarCollapsed"] {
+    opacity    : 1 !important;
+    visibility : visible !important;
+    display    : flex !important;
+}
+
+/* Glass circle base for both states */
 [data-testid="stSidebarCollapseButton"] button,
 [data-testid="stSidebarCollapsed"] button {
     position        : relative !important;
@@ -60,7 +76,6 @@ footer { display: none !important; }
     height          : 36px !important;
     border-radius   : 50% !important;
     padding         : 0 !important;
-    /* liquid glass: white-to-lavender gradient + inner highlight */
     background      : linear-gradient(145deg,
                         rgba(255,255,255,0.97) 0%,
                         rgba(236,232,248,0.90) 100%) !important;
@@ -76,15 +91,16 @@ footer { display: none !important; }
     overflow        : visible !important;
 }
 
-/* Hide the native chevron/arrow SVG */
-[data-testid="stSidebarCollapseButton"] button svg,
-[data-testid="stSidebarCollapsed"] button svg {
+/* Hide ALL native button content: SVG arrows AND Material Icons span text
+   (Streamlit 1.56 uses <span class="material-icons">keyboard_double_arrow_*</span>
+   which renders as literal text when the font fails to load) */
+[data-testid="stSidebarCollapseButton"] button > *,
+[data-testid="stSidebarCollapsed"] button > * {
     display: none !important;
 }
 
-/* Three-line hamburger via box-shadow on a single ::before pseudo-element.
-   Math: 2px line + 1.5px gap + 2px line + 1.5px gap + 2px line = 9px total.
-   translate(-50%, calc(-50% - 3.5px)) centers the block in the button. */
+/* Three-line hamburger via a single ::before with box-shadow.
+   9px total block height; translate offset centers it exactly. */
 [data-testid="stSidebarCollapseButton"] button::before,
 [data-testid="stSidebarCollapsed"] button::before {
     content       : '' !important;
@@ -581,7 +597,7 @@ if scatter_rows:
 # ── Live scorer ───────────────────────────────────────────────────────────────
 st.divider()
 st.subheader("Live scorer")
-st.caption("Score any text with all three models in real time.")
+st.caption("Score any text with both models in real time.")
 
 user_text = st.text_area("Text to score", placeholder="Enter any text…", height=100)
 
