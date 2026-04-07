@@ -1,5 +1,8 @@
 """Base class for all toxicity analyzer implementations."""
 
+# changes annotation behavior - become strings rather than evaluated types
+# so Python 3.9 can run syntax
+from __future__ import annotations
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 

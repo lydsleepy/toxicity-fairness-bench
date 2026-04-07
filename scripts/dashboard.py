@@ -52,83 +52,10 @@ _CSS = """
 footer { display: none !important; }
 [data-testid="stDecoration"] { display: none !important; }
 
-/* ── sidebar toggle: always-visible liquid glass hamburger ── */
-
-/* Override Streamlit's hover-only opacity on the sidebar header
-   (default: opacity:0, only shown on .stSidebar:hover) */
-[data-testid="stSidebarHeader"] {
-    opacity    : 1 !important;
-    visibility : visible !important;
-}
-
-/* Ensure the collapsed-state expand button is always rendered */
+/* ── hide sidebar toggle — sidebar is always visible ── */
+[data-testid="stSidebarCollapseButton"],
 [data-testid="stSidebarCollapsed"] {
-    opacity    : 1 !important;
-    visibility : visible !important;
-    display    : flex !important;
-}
-
-/* Glass circle base for both states */
-[data-testid="stSidebarCollapseButton"] button,
-[data-testid="stSidebarCollapsed"] button {
-    position        : relative !important;
-    width           : 36px !important;
-    height          : 36px !important;
-    border-radius   : 50% !important;
-    padding         : 0 !important;
-    background      : linear-gradient(145deg,
-                        rgba(255,255,255,0.97) 0%,
-                        rgba(236,232,248,0.90) 100%) !important;
-    border          : 0.5px solid rgba(255,255,255,0.80) !important;
-    box-shadow      : 0 2px 12px rgba(0,0,0,0.10),
-                      0 0 0 0.5px rgba(138,175,196,0.22),
-                      inset 0 1px 0 rgba(255,255,255,0.95) !important;
-    cursor          : pointer !important;
-    display         : flex !important;
-    align-items     : center !important;
-    justify-content : center !important;
-    transition      : box-shadow 0.18s ease, transform 0.16s ease !important;
-    overflow        : visible !important;
-}
-
-/* Hide ALL native button content: SVG arrows AND Material Icons span text
-   (Streamlit 1.56 uses <span class="material-icons">keyboard_double_arrow_*</span>
-   which renders as literal text when the font fails to load) */
-[data-testid="stSidebarCollapseButton"] button > *,
-[data-testid="stSidebarCollapsed"] button > * {
     display: none !important;
-}
-
-/* Three-line hamburger via a single ::before with box-shadow.
-   9px total block height; translate offset centers it exactly. */
-[data-testid="stSidebarCollapseButton"] button::before,
-[data-testid="stSidebarCollapsed"] button::before {
-    content       : '' !important;
-    display       : block !important;
-    position      : absolute !important;
-    width         : 14px !important;
-    height        : 2px !important;
-    background    : #8c8c96 !important;
-    border-radius : 1px !important;
-    top           : 50% !important;
-    left          : 50% !important;
-    transform     : translate(-50%, calc(-50% - 3.5px)) !important;
-    box-shadow    : 0 3.5px 0 #8c8c96, 0 7px 0 #8c8c96 !important;
-    transition    : background 0.15s ease, box-shadow 0.15s ease !important;
-}
-
-[data-testid="stSidebarCollapseButton"] button:hover,
-[data-testid="stSidebarCollapsed"] button:hover {
-    box-shadow : 0 5px 22px rgba(0,0,0,0.14),
-                 0 0 0 0.5px rgba(138,175,196,0.35),
-                 inset 0 1px 0 rgba(255,255,255,0.95) !important;
-    transform  : scale(1.07) !important;
-}
-
-[data-testid="stSidebarCollapseButton"] button:hover::before,
-[data-testid="stSidebarCollapsed"] button:hover::before {
-    background : #2c2c2e !important;
-    box-shadow : 0 3.5px 0 #2c2c2e, 0 7px 0 #2c2c2e !important;
 }
 
 /* ── app background: pastel blobs ── */
