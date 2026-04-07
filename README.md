@@ -9,7 +9,7 @@ demographic parity, FPR parity) alongside accuracy. Google Gemini is
 supported by the framework but excluded from the published benchmark run
 due to free-tier rate limits — see [docs/gemini-rate-limits.md](docs/gemini-rate-limits.md).
 
-**[Live demo →](https://toxicity-fairness-bench.streamlit.app/)**
+**[Live demo](https://toxicity-fairness-bench.streamlit.app/)**
 
 > **Run locally:** `streamlit run scripts/dashboard.py`
 > **Deploy to Streamlit Cloud:** see [docs/deploy.md](docs/deploy.md) for 5-minute instructions.
