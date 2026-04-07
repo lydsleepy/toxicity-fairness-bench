@@ -1,11 +1,17 @@
 """Google Perspective API toxicity analyzer."""
 
 import os
+import re
 import time
 
 from googleapiclient import discovery
 
 from toxicity_fairness.analyzers.base import AnalysisResult, BaseAnalyzer
+
+
+def _redact_key(msg: str) -> str:
+    """Strip API key query parameter from error strings (e.g. HttpError URLs)."""
+    return re.sub(r"(?i)[?&]key=[^&\s\"'>]+", "?key=REDACTED", msg)
 
 
 class PerspectiveAnalyzer(BaseAnalyzer):
@@ -53,4 +59,6 @@ class PerspectiveAnalyzer(BaseAnalyzer):
                 raw_response=resp,
             )
         except Exception as exc:
-            return AnalysisResult.from_error(text, self.model_name, str(exc))
+            return AnalysisResult.from_error(
+                text, self.model_name, _redact_key(str(exc))
+            )

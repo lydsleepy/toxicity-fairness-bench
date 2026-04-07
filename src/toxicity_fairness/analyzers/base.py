@@ -3,6 +3,7 @@
 # changes annotation behavior - become strings rather than evaluated types
 # so Python 3.9 can run syntax
 from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 
@@ -19,7 +20,7 @@ class AnalysisResult:
     raw_response: dict = field(default_factory=dict)
 
     @classmethod
-    def from_error(cls, text: str, model: str, error: str) -> "AnalysisResult":
+    def from_error(cls, text: str, model: str, error: str) -> AnalysisResult:
         return cls(text=text, score=None, label="non-toxic", model=model, error=error)
 
 

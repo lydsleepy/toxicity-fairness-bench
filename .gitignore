@@ -4,5 +4,6 @@ __pycache__/
 *.egg-info/
 .venv/
 results/
+!results/raw_results.parquet
 data/raw/
 .DS_Store
