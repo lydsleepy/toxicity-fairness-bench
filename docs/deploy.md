@@ -9,7 +9,7 @@ you generate by running the benchmark.
 1. Run the benchmark to generate results:
 
    ```bash
-   python scripts/run_benchmark.py --sample 1000 \
+   python3 scripts/run_benchmark.py --sample 1000 \
        --models perspective claude \
        --output results/
    ```
@@ -44,7 +44,7 @@ you generate by running the benchmark.
 
 5. **Click "Deploy"**. The app will be live at a `*.streamlit.app` URL in ~2 minutes.
 
-   Update the README demo link with your live URL once deployed.
+**Live app:** https://toxicity-fairness-bench.streamlit.app/
 
 ## Notes
 

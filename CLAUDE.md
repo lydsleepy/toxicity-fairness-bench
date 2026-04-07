@@ -288,11 +288,9 @@ secret named `CODECOV_TOKEN`. This enables the coverage badge.
 
 ---
 
-## What still needs to be done (as of 2026-04-05)
+## What still needs to be done (as of 2026-04-06)
 
-1. **Deploy the dashboard** — repo is on GitHub (`lydsleepy/toxicity-fairness-bench`); connect
-   at share.streamlit.io and add API keys as Streamlit Secrets. Update README
-   badge with live URL.
+1. ~~**Deploy the dashboard**~~ — **Done.** Live at https://toxicity-fairness-bench.streamlit.app/
 2. **Add Codecov token** — add `CODECOV_TOKEN` to GitHub Secrets for the
    coverage badge. CI currently has `fail_ci_if_error: false` so it doesn't
    block, but the badge is missing.
@@ -301,8 +299,7 @@ secret named `CODECOV_TOKEN`. This enables the coverage badge.
    allows; regenerate `notebooks/analysis.ipynb` with full charts.
 4. **Add LICENSE file content** — `pyproject.toml` references `LICENSE` but
    the file may be empty. Fill in MIT license text.
-5. **README polish** — add CI badge, coverage badge, and a live demo link once
-   deployed.
+5. **README polish** — add CI badge, coverage badge.
 
 ---
 
@@ -314,3 +311,10 @@ following a spec in `../CLAUDE_CODE_INSTRUCTIONS.md` (one directory up, outside
 this repo — treat as historical context only, not authoritative). The original
 40-row dataset and notebook are preserved at `data.csv` and
 `notebooks/bias_analysis.ipynb`. Do not modify those files.
+
+---
+
+## Instructions for updating this file
+
+Update this file as changes are made to the repo. 
+This file should always contain the most up-to-date information about the repo.
