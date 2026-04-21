@@ -9,11 +9,6 @@ demographic parity, FPR parity) alongside accuracy. Google Gemini is
 supported by the framework but excluded from the published benchmark run
 due to free-tier rate limits — see [docs/gemini-rate-limits.md](docs/gemini-rate-limits.md).
 
-**[Live demo](https://toxicity-fairness-bench.streamlit.app/)**
-
-> **Run locally:** `streamlit run scripts/dashboard.py`
-> **Deploy to Streamlit Cloud:** see [docs/deploy.md](docs/deploy.md) for 5-minute instructions.
-
 ---
 
 ## Key findings
@@ -25,11 +20,8 @@ due to free-tier rate limits — see [docs/gemini-rate-limits.md](docs/gemini-ra
 
 *"Gap" = max accuracy difference between any two subgroups within that
 attribute (95% bootstrap CI). Smaller = fairer. Dataset: HateXplain,
-1,000-sample draw. Claude achieves both higher accuracy and smaller
+1,000-sample draw, seed 42. Claude achieves both higher accuracy and smaller
 fairness gaps across all three attributes.*
-
-*Google Gemini is supported but excluded from this run — see
-[docs/gemini-rate-limits.md](docs/gemini-rate-limits.md).*
 
 See [`notebooks/analysis.ipynb`](notebooks/analysis.ipynb) for full
 confusion matrices, equalized odds plots, and per-subgroup breakdowns.
@@ -61,15 +53,13 @@ pip install -e ".[dev]"
 cp .env.example .env
 # Edit .env with your keys (see "API Keys" section below)
 
-# 3. Run the benchmark on a sample
+# 3. Run the benchmark
 python scripts/run_benchmark.py --sample 1000 --models perspective claude
 
-# 4. Launch the dashboard
-streamlit run scripts/dashboard.py
+# 4. Launch the web app
+uvicorn app.main:app --reload
+# Open http://localhost:8000
 ```
-
-To include Gemini, first read [docs/gemini-rate-limits.md](docs/gemini-rate-limits.md)
-for guidance on free-tier quotas, then add `gemini` to `--models`.
 
 ---
 
@@ -77,27 +67,41 @@ for guidance on free-tier quotas, then add `gemini` to `--models`.
 
 ```
 toxicity-fairness-bench/
-├── src/toxicity_fairness/
-│   ├── analyzers/          # One module per API
-│   │   ├── base.py         # Abstract base class
+├── app/                        # FastAPI web application
+│   ├── main.py                 # App factory, routes
+│   ├── dependencies.py         # Parquet data loader (cached singleton)
+│   ├── routers/
+│   │   ├── data.py             # GET /api/filters, GET /api/metrics
+│   │   └── scorer.py           # POST /api/score (live API calls)
+│   └── templates/
+│       └── index.html          # Single-page HTML shell
+├── static/
+│   ├── css/main.css            # Design token system + components
+│   └── js/app.js               # Plotly charts, filters, live scorer
+├── src/toxicity_fairness/      # Installable Python package
+│   ├── analyzers/              # One module per API
+│   │   ├── base.py             # Abstract base + AnalysisResult dataclass
 │   │   ├── perspective.py
-│   │   ├── gemini.py       # Gemini 2.5 Flash Lite (see rate-limit notes)
+│   │   ├── gemini.py           # Rate-limited; see docs/gemini-rate-limits.md
 │   │   └── claude.py
-│   ├── metrics/            # Fairness metric implementations
-│   │   └── fairness.py
-│   ├── data/               # Dataset loaders
-│   │   └── loaders.py
+│   ├── metrics/
+│   │   └── fairness.py         # group_stats, fairness_report, gap metrics
+│   ├── data/
+│   │   └── loaders.py          # load_hatexplain(), load_jigsaw()
 │   └── utils/
-│       └── cache.py        # Parquet cache to avoid redundant API calls
-├── tests/                  # pytest unit tests (no API keys needed)
-├── notebooks/
-│   ├── bias_analysis.ipynb # Original class assignment (preserved)
-│   └── analysis.ipynb      # Full benchmark analysis notebook
+│       └── cache.py            # Parquet cache keyed by (dataset, model, sample)
 ├── scripts/
-│   ├── run_benchmark.py    # CLI entry point
-│   └── dashboard.py        # Streamlit app
-├── docs/                   # Setup guides and design notes
-└── data.csv                # Original 40-row hand-labeled dataset (preserved)
+│   ├── run_benchmark.py        # CLI: runs APIs, saves results/raw_results.parquet
+│   └── dashboard.py            # Legacy Streamlit app (preserved, not primary)
+├── tests/                      # 26 unit tests — no API keys required
+├── notebooks/
+│   ├── analysis.ipynb          # Full benchmark analysis with charts
+│   └── bias_analysis.ipynb     # Original class assignment (preserved)
+├── results/
+│   └── raw_results.parquet     # Pre-computed benchmark results (committed)
+├── Procfile                    # Railway deployment entry point
+├── railway.toml                # Railway build + deploy config
+└── docs/                       # Setup guides and design notes
 ```
 
 ---
@@ -107,8 +111,8 @@ toxicity-fairness-bench/
 | API | URL | Free tier |
 |---|---|---|
 | Google Perspective | [perspectiveapi.com](https://perspectiveapi.com) | Yes (1 QPS) |
-| Google Gemini | [aistudio.google.com](https://aistudio.google.com) | Yes — see [rate limit notes](docs/gemini-rate-limits.md) |
 | Anthropic Claude | [console.anthropic.com](https://console.anthropic.com) | Pay-as-you-go |
+| Google Gemini | [aistudio.google.com](https://aistudio.google.com) | Yes — see [rate limit notes](docs/gemini-rate-limits.md) |
 
 Copy `.env.example` to `.env` and fill in your keys. Keys are never
 committed — `.env` is in `.gitignore`.
@@ -117,12 +121,12 @@ committed — `.env` is in `.gitignore`.
 
 ## Datasets
 
-| Dataset | Size | License |
-|---|---|---|
-| HateXplain | 20k | CC BY 4.0 |
+| Dataset | Size | License | Notes |
+|---|---|---|---|
+| HateXplain | 20k | CC BY 4.0 | Auto-downloaded via HuggingFace |
 
-HateXplain downloads automatically via HuggingFace (`trust_remote_code=True`
-required; pin `datasets<3.0` — see [docs/datasets.md](docs/datasets.md)).
+HateXplain downloads automatically on first benchmark run
+(`trust_remote_code=True` required; pin `datasets<3.0` — see [docs/datasets.md](docs/datasets.md)).
 
 The original 40-row hand-labeled dataset from the class assignment is
 preserved at `data.csv` for reference.
@@ -138,11 +142,23 @@ For each (model, protected attribute) pair:
 - **False Negative Rate (FNR)** — toxic text missed
 - **Equalized Odds** — difference in TPR and FPR across groups
 - **Demographic Parity** — difference in positive prediction rates
-- All metrics include 95% bootstrap confidence intervals
+- All accuracy estimates include 95% bootstrap confidence intervals
 
-Note: HateXplain is a hate-speech dataset; most subgroup samples are
-labeled toxic, so FPR is undefined for groups with no non-toxic examples.
-See the notebook for full discussion of dataset limitations.
+Note: HateXplain is heavily skewed toward toxic content, so FPR is
+undefined for subgroups with no non-toxic examples. See the notebook for
+full discussion.
+
+---
+
+## Deploy to Railway
+
+1. Fork or push this repo to GitHub
+2. Create a new project on [railway.app](https://railway.app) and connect the repo
+3. Add environment variables: `PERSPECTIVE_API_KEY`, `ANTHROPIC_API_KEY`
+4. Railway detects the `Procfile` automatically and deploys
+
+The `results/raw_results.parquet` file is committed, so the dashboard
+loads immediately without needing to re-run the benchmark.
 
 ---
 
@@ -153,22 +169,22 @@ pytest tests/ -v
 pytest tests/ --cov=src --cov-report=term-missing   # with coverage
 ```
 
-CI runs automatically on every push via GitHub Actions.
+All 26 tests pass without API keys. CI runs automatically on every push
+via GitHub Actions (Python 3.11 and 3.12).
 
 ---
 
 ## Tech stack
 
-Python 3.11 · pandas · scikit-learn · anthropic · google-genai ·
-google-api-python-client · streamlit · plotly · tenacity · pytest · GitHub Actions
+Python 3.11 · FastAPI · Uvicorn · Plotly.js · pandas · scikit-learn ·
+anthropic · google-genai · google-api-python-client · tenacity · pytest · Railway
 
 ---
 
 ## Original class assignment
 
-The `notebooks/bias_analysis.ipynb` notebook and `data.csv` file are the
-original deliverables from an introductory data science course at UT Austin.
-They are preserved as-is for reference and to show the project's origins.
+`notebooks/bias_analysis.ipynb` and `data.csv` are the original deliverables
+from an introductory data science course at UT Austin. Preserved as-is.
 
 ---
 
