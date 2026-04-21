@@ -10,8 +10,8 @@ this repository. Read it fully before taking any action.
 `toxicity-fairness-bench` is a Python package that benchmarks commercial
 toxicity detection APIs for demographic fairness. It was refactored from a
 class assignment (`AI-Bias`, a 40-row notebook) into a production-quality
-portfolio project with a proper package structure, CI, and a deployed
-Streamlit dashboard.
+portfolio project with a proper package structure, CI, and a FastAPI web app
+deployable on Railway.
 
 **What it does:**
 - Loads the HateXplain dataset (20k posts, auto-downloaded from HuggingFace)
@@ -50,22 +50,35 @@ toxicity-fairness-bench/
 │   │   └── loaders.py           # load_hatexplain(), load_jigsaw(), load_dataset_by_name()
 │   └── utils/
 │       └── cache.py             # Parquet cache keyed by (dataset, model, sample)
+├── app/                         # FastAPI web application
+│   ├── main.py                  # App factory, route wiring, static + template mounts
+│   ├── dependencies.py          # load_df() — lru_cache parquet singleton
+│   ├── routers/
+│   │   ├── data.py              # GET /api/filters, GET /api/metrics
+│   │   └── scorer.py            # POST /api/score (live scorer)
+│   └── templates/
+│       └── index.html           # Single-page HTML shell
+├── static/
+│   ├── css/main.css             # Design token system + all component styles
+│   └── js/app.js                # State, fetch, Plotly charts, scorer, tabs
 ├── scripts/
 │   ├── run_benchmark.py         # CLI entry point
-│   └── dashboard.py             # Streamlit app
+│   └── dashboard.py             # Legacy Streamlit app (kept for reference)
 ├── tests/
 │   └── test_all.py              # 26 unit tests (no API keys required)
 ├── notebooks/
 │   ├── analysis.ipynb           # Full benchmark analysis with charts
 │   └── bias_analysis.ipynb      # Original class assignment (preserved, do not modify)
 ├── docs/
-│   ├── deploy.md                # Streamlit Cloud deployment guide
+│   ├── deploy.md                # Streamlit Cloud deployment guide (legacy)
 │   ├── datasets.md              # Dataset setup + cost estimates
 │   ├── gemini-rate-limits.md    # Why Gemini was excluded from the benchmark
 │   ├── prompt_design.md         # Prompt wording rationale + experiment ideas
 │   └── execution_plan.md        # Original implementation plan (historical)
 ├── data.csv                     # Original 40-row hand-labeled dataset (do not modify)
-├── requirements.txt             # For Streamlit Cloud (mirrors pyproject.toml deps)
+├── Procfile                     # Railway: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+├── railway.toml                 # Railway build + deploy config
+├── requirements.txt             # Production deps (mirrors pyproject.toml)
 ├── pyproject.toml               # Package config, ruff, mypy, pytest settings
 ├── .env.example                 # Template for API keys
 └── .github/workflows/ci.yml     # GitHub Actions: lint + test on Python 3.11 and 3.12
@@ -82,7 +95,7 @@ toxicity-fairness-bench/
 source .venv/bin/activate
 ```
 
-Or use the full path `.venv/bin/python` / `.venv/bin/streamlit` / etc.
+Or use the full path `.venv/bin/python` / `.venv/bin/uvicorn` / etc.
 
 **Install (editable + dev extras):**
 
@@ -129,8 +142,8 @@ All 26 tests pass without any API keys. Tests cover `AnalysisResult`,
 ### Lint
 
 ```bash
-ruff check src/ tests/ scripts/
-ruff check --fix src/ tests/ scripts/   # auto-fix what can be fixed
+ruff check src/ tests/ scripts/ app/
+ruff check --fix src/ tests/ scripts/ app/   # auto-fix what can be fixed
 ```
 
 `E402` is suppressed for `scripts/*.py` via `per-file-ignores` in
@@ -159,17 +172,24 @@ Output written to `results/` (gitignored):
 - `results/fairness_report.csv` — summary metrics per model
 - `results/cache/<hash>.parquet` — per-(model, dataset, sample) cache
 
-### Dashboard
+### Web app (FastAPI)
 
 ```bash
-source .venv/bin/activate
-streamlit run scripts/dashboard.py
+uvicorn app.main:app --reload
+# or: python -m uvicorn app.main:app --reload
 ```
 
-The dashboard reads `results/raw_results.parquet`. If that file doesn't exist
-it shows a warning and the live scorer still works. Deploy to Streamlit
-Community Cloud per `docs/deploy.md`; set `main file path` to
-`scripts/dashboard.py`. The repo name on GitHub is `lydsleepy/toxicity-fairness-bench`.
+Runs on http://localhost:8000. The app reads `results/raw_results.parquet`
+(committed to the repo). Deploy to Railway: connect the GitHub repo, set API
+key env vars, and Railway auto-detects the `Procfile` / `railway.toml`.
+
+**API endpoints:**
+- `GET /api/filters` — available models + protected attributes
+- `GET /api/metrics?models=X&attribute=Y` — all chart data in one payload
+- `POST /api/score` — live scorer (body: `{"text": "..."}`)
+
+The legacy `scripts/dashboard.py` (Streamlit) is preserved but not the
+primary interface.
 
 ---
 
@@ -265,7 +285,7 @@ Matrix: Python 3.11 and 3.12.
 
 Steps:
 1. `pip install -e ".[dev]"`
-2. `ruff check src/ tests/ scripts/`
+2. `ruff check src/ tests/ scripts/ app/`
 3. `pytest tests/ --cov=src --cov-report=xml`
 4. Upload to Codecov (non-fatal if `CODECOV_TOKEN` secret is absent)
 
@@ -290,7 +310,9 @@ secret named `CODECOV_TOKEN`. This enables the coverage badge.
 
 ## What still needs to be done (as of 2026-04-06)
 
-1. ~~**Deploy the dashboard**~~ — **Done.** Live at https://toxicity-fairness-bench.streamlit.app/
+1. ~~**Deploy the dashboard**~~ — **Done.** Previously on Streamlit Cloud; now
+   migrated to FastAPI. Deploy the new app to Railway by connecting the GitHub
+   repo and setting API key env vars (`PERSPECTIVE_API_KEY`, `ANTHROPIC_API_KEY`).
 2. **Add Codecov token** — add `CODECOV_TOKEN` to GitHub Secrets for the
    coverage badge. CI currently has `fail_ci_if_error: false` so it doesn't
    block, but the badge is missing.
@@ -299,7 +321,8 @@ secret named `CODECOV_TOKEN`. This enables the coverage badge.
    allows; regenerate `notebooks/analysis.ipynb` with full charts.
 4. **Add LICENSE file content** — `pyproject.toml` references `LICENSE` but
    the file may be empty. Fill in MIT license text.
-5. **README polish** — add CI badge, coverage badge.
+5. **README polish** — update README to reflect FastAPI + Railway deployment,
+   add CI badge, coverage badge, update live app URL.
 
 ---
 

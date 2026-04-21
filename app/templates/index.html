@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Toxicity Fairness Benchmark</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/main.css" />
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" defer></script>
+  <script src="/static/js/app.js" defer></script>
+</head>
+<body>
+  <div class="layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <span class="sidebar-wordmark">TFB</span>
+      </div>
+
+      <nav class="sidebar-nav">
+        <span class="nav-section-label">Models</span>
+        <div id="model-filters" class="filter-group"></div>
+
+        <span class="nav-section-label" style="margin-top:28px;">Protected Attribute</span>
+        <div class="select-wrapper">
+          <select id="attr-select" class="select" aria-label="Select protected attribute"></select>
+          <span class="select-arrow" aria-hidden="true">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <a href="https://github.com/lydsleepy/toxicity-fairness-bench" class="sidebar-link" target="_blank" rel="noopener">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+          GitHub
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <header class="page-header">
+        <div>
+          <h1 class="page-title">Toxicity Fairness Benchmark</h1>
+          <p class="page-subtitle">
+            Demographic fairness evaluation of commercial toxicity APIs &middot;
+            <a href="https://huggingface.co/datasets/hatexplain" class="text-link" target="_blank" rel="noopener">HateXplain</a> dataset, 1,000-sample draw, seed&nbsp;42
+          </p>
+        </div>
+      </header>
+
+      <!-- Tabs -->
+      <div class="tabs" role="tablist" aria-label="Dashboard sections">
+        <button class="tab active" data-tab="overview" role="tab" aria-selected="true">Overview</button>
+        <button class="tab" data-tab="fairness" role="tab" aria-selected="false">Fairness Metrics</button>
+        <button class="tab" data-tab="scorer" role="tab" aria-selected="false">Live Scorer</button>
+      </div>
+
+      <!-- Loading state -->
+      <div id="loading-state" class="loading-state" hidden>
+        <div class="spinner" role="status" aria-label="Loading"></div>
+      </div>
+
+      <!-- Error state (no data) -->
+      <div id="no-data-alert" class="alert alert-warning" hidden>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <span>Benchmark results not found. Run <code>python scripts/run_benchmark.py --sample 1000 --models perspective claude</code> to generate data.</span>
+      </div>
+
+      <!-- Tab: Overview -->
+      <section class="tab-panel" id="tab-overview" role="tabpanel">
+
+        <div class="section-header">
+          <h2 class="section-title">Overall Accuracy</h2>
+          <p class="section-desc">Percentage of correct predictions across all samples</p>
+        </div>
+        <div class="tiles" id="accuracy-tiles"></div>
+
+        <div class="section-header" style="margin-top:48px;">
+          <h2 class="section-title" id="group-chart-title">Accuracy by Group</h2>
+          <p class="section-desc">Prediction accuracy per demographic subgroup within the selected protected attribute</p>
+        </div>
+        <div class="card chart-card">
+          <div id="chart-accuracy-group"></div>
+        </div>
+
+      </section>
+
+      <!-- Tab: Fairness Metrics -->
+      <section class="tab-panel" id="tab-fairness" role="tabpanel" hidden>
+
+        <div class="section-header">
+          <h2 class="section-title">Fairness Summary</h2>
+          <p class="section-desc">Gap metrics across demographic subgroups — smaller values indicate greater fairness</p>
+        </div>
+        <div class="card">
+          <div class="table-scroll" id="fairness-table-wrapper"></div>
+          <p class="table-caption">
+            <strong>Acc. Gap</strong> = max accuracy difference across subgroups &middot;
+            <strong>DP Gap</strong> = demographic parity (positive prediction rate) &middot;
+            <strong>TPR/FPR Gap</strong> = equalized odds components
+          </p>
+        </div>
+
+        <div class="section-header" style="margin-top:48px;">
+          <h2 class="section-title">False Positive vs. False Negative Rate</h2>
+          <p class="section-desc">Points near the origin indicate equalized odds across subgroups. Bubble size = sample count.</p>
+        </div>
+        <div class="card chart-card">
+          <div id="chart-scatter"></div>
+        </div>
+
+      </section>
+
+      <!-- Tab: Live Scorer -->
+      <section class="tab-panel" id="tab-scorer" role="tabpanel" hidden>
+
+        <div class="section-header">
+          <h2 class="section-title">Live Scorer</h2>
+          <p class="section-desc">Score any text against all available models in real time using live API calls</p>
+        </div>
+
+        <div class="card scorer-card">
+          <div class="field">
+            <label class="field-label" for="score-input">Text to evaluate</label>
+            <textarea id="score-input" class="textarea" rows="4" placeholder="Enter any text to analyze for toxicity..."></textarea>
+          </div>
+          <div class="scorer-actions">
+            <button id="score-btn" class="btn btn-primary">Analyze</button>
+          </div>
+          <div id="scorer-results" class="scorer-results" hidden></div>
+        </div>
+
+      </section>
+
+      <footer class="page-footer">
+        <p>
+          Dataset: <a href="https://huggingface.co/datasets/hatexplain" class="text-link" target="_blank" rel="noopener">HateXplain</a> (CC BY 4.0)
+          &middot; MIT License
+          &middot; <a href="https://github.com/lydsleepy/toxicity-fairness-bench" class="text-link" target="_blank" rel="noopener">Source on GitHub</a>
+        </p>
+      </footer>
+    </main>
+
+  </div>
+</body>
+</html>
