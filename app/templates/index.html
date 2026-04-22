@@ -71,6 +71,12 @@
         <span>Benchmark results not found. Run <code>python scripts/run_benchmark.py --sample 1000 --models perspective claude</code> to generate data.</span>
       </div>
 
+      <!-- Error state (server error) -->
+      <div id="error-alert" class="alert alert-error" hidden>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span class="error-msg"></span>
+      </div>
+
       <!-- Tab: Overview -->
       <section class="tab-panel" id="tab-overview" role="tabpanel">
 

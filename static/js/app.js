@@ -50,13 +50,19 @@ const PLOTLY_CONFIG = { responsive: true, displayModeBar: false };
 async function init() {
   let filters;
   try {
-    filters = await fetch('/api/filters').then(r => r.json());
-  } catch {
-    showNoData();
+    const res = await fetch('/api/filters');
+    filters = await res.json();
+  } catch (err) {
+    showError(`Could not reach the API: ${err.message}`);
     return;
   }
 
-  if (!filters.models.length) {
+  if (filters.error) {
+    showError(`Failed to load benchmark data: ${filters.error}`);
+    return;
+  }
+
+  if (!filters.models || !filters.models.length) {
     showNoData();
     return;
   }
@@ -376,6 +382,15 @@ function setLoading(on) {
 function showNoData() {
   const el = document.getElementById('no-data-alert');
   if (el) el.hidden = false;
+  setLoading(false);
+}
+
+function showError(msg) {
+  const el = document.getElementById('error-alert');
+  if (el) {
+    el.querySelector('.error-msg').textContent = msg;
+    el.hidden = false;
+  }
   setLoading(false);
 }
 

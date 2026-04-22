@@ -37,13 +37,16 @@ def _clean(obj: Any) -> Any:
 
 
 @router.get("/filters")
-def get_filters() -> dict[str, list[str]]:
+def get_filters() -> dict:
     if not df_available():
-        return {"models": [], "protected_attributes": []}
-    df = load_df()
-    models = sorted(df["model"].unique().tolist())
-    attrs = sorted(df["protected_attribute"].dropna().unique().tolist())
-    return {"models": models, "protected_attributes": attrs}
+        return {"models": [], "protected_attributes": [], "error": None}
+    try:
+        df = load_df()
+        models = sorted(df["model"].unique().tolist())
+        attrs = sorted(df["protected_attribute"].dropna().unique().tolist())
+        return {"models": models, "protected_attributes": attrs, "error": None}
+    except Exception as exc:
+        return {"models": [], "protected_attributes": [], "error": str(exc)}
 
 
 @router.get("/metrics")
