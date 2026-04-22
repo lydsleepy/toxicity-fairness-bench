@@ -13,6 +13,7 @@ authors = [{ name = "Lydia Huang", email = "jiahua.mp3@gmail.com" }]
 
 dependencies = [
     "pandas>=2.0",
+    "pyarrow>=14.0",
     "numpy>=1.26",
     "scikit-learn>=1.4",
     "anthropic>=0.25",

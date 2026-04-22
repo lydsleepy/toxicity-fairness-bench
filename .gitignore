@@ -3,7 +3,7 @@ __pycache__/
 *.pyc
 *.egg-info/
 .venv/
-results/
-!results/raw_results.parquet
+results/cache/
+results/fairness_report.csv
 data/raw/
 .DS_Store
