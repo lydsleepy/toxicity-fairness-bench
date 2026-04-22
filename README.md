@@ -3,6 +3,8 @@
 A fairness evaluation framework for commercial toxicity detection APIs,
 benchmarked across gender, race, and religion using real-world datasets.
 
+Data Visualization Website Deployed at: https://toxicity-fairness-bench.up.railway.app/
+
 Compares **Google Perspective API** and **Anthropic Claude** across multiple
 protected attributes, reporting standard fairness metrics (equalized odds,
 demographic parity, FPR parity) alongside accuracy. Google Gemini is
