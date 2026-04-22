@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pandas as pd
 
-_PARQUET = Path(__file__).parent.parent / "results" / "raw_results.parquet"
+_PARQUET = Path(__file__).resolve().parent.parent / "results" / "raw_results.parquet"
 
 
 @lru_cache(maxsize=1)

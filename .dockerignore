@@ -1,0 +1,26 @@
+# Secrets and local config
+.env
+.venv/
+
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+.pytest_cache/
+
+# Git metadata
+.git/
+.github/
+
+# Dev artefacts
+.DS_Store
+notebooks/
+docs/
+.devcontainer/
+.streamlit/
+
+# Ignored results (raw_results.parquet is intentionally NOT listed here)
+results/cache/
+results/fairness_report.csv
