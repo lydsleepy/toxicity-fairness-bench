@@ -11,11 +11,13 @@ import pytest
 from toxicity_fairness.analyzers.base import AnalysisResult, BaseAnalyzer
 from toxicity_fairness.analyzers.gemini import GeminiAnalyzer
 from toxicity_fairness.metrics.fairness import (
+    MIN_CLASS_N,
     accuracy_gap,
     demographic_parity_gap,
     equalized_odds_gap,
     fairness_report,
     group_stats,
+    skewed_groups,
 )
 from toxicity_fairness.utils.cache import ResultCache
 
@@ -100,6 +102,46 @@ class TestGroupStats:
         stats = group_stats(sample_results_df)
         assert stats.loc["Male", "n"] == 4
         assert stats.loc["Female", "n"] == 4
+
+    def test_n_pos_n_neg_columns_exist(self, sample_results_df):
+        stats = group_stats(sample_results_df)
+        assert "n_pos" in stats.columns
+        assert "n_neg" in stats.columns
+
+    def test_n_pos_n_neg_values(self, sample_results_df):
+        stats = group_stats(sample_results_df)
+        # Male: rows A (toxic), B (toxic), C (non-toxic), D (non-toxic)
+        assert stats.loc["Male", "n_pos"] == 2
+        assert stats.loc["Male", "n_neg"] == 2
+        # Female: rows E (toxic), F (toxic), G (non-toxic), H (non-toxic)
+        assert stats.loc["Female", "n_pos"] == 2
+        assert stats.loc["Female", "n_neg"] == 2
+
+
+class TestSkewedGroups:
+    def test_flags_all_positive_group(self):
+        df = pd.DataFrame(
+            [{"actual_label": "toxic", "predicted_label": "toxic",
+              "attribute_value": "GroupA"}] * 40
+            + [{"actual_label": "toxic", "predicted_label": "toxic",
+                "attribute_value": "GroupB"}] * 20
+            + [{"actual_label": "non-toxic", "predicted_label": "non-toxic",
+                "attribute_value": "GroupB"}] * 20
+        )
+        stats = group_stats(df)
+        bad = skewed_groups(stats, min_class_n=1)
+        assert "GroupA" in bad
+        assert "GroupB" not in bad
+
+    def test_threshold_respected(self, sample_results_df):
+        stats = group_stats(sample_results_df)
+        # Both groups have n_pos=n_neg=2, which is below default MIN_CLASS_N=30
+        assert len(skewed_groups(stats)) == 2
+        # With threshold=2, both groups have exactly 2 of each class → not skewed
+        assert len(skewed_groups(stats, min_class_n=2)) == 0
+
+    def test_min_class_n_constant(self):
+        assert MIN_CLASS_N == 30
 
 
 class TestGapMetrics:

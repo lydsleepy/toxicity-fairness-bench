@@ -16,6 +16,8 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
+MIN_CLASS_N = 30
+
 
 def _binary(series: pd.Series) -> np.ndarray:
     """Convert 'toxic'/'non-toxic' string labels to 1/0 int array."""
@@ -70,6 +72,8 @@ def group_stats(df: pd.DataFrame, group_col: str = "attribute_value") -> pd.Data
         rows.append({
             "group":     group,
             "n":         n,
+            "n_pos":     tp + fn,   # actual positives in group
+            "n_neg":     tn + fp,   # actual negatives in group
             "accuracy":  acc,
             "acc_ci_lo": acc_ci[0],
             "acc_ci_hi": acc_ci[1],
@@ -81,6 +85,19 @@ def group_stats(df: pd.DataFrame, group_col: str = "attribute_value") -> pd.Data
         })
 
     return pd.DataFrame(rows).set_index("group")
+
+
+def skewed_groups(
+    stats_df: pd.DataFrame,
+    min_class_n: int = MIN_CLASS_N,
+) -> list[str]:
+    """
+    Return group names where either class has fewer than min_class_n examples.
+    These groups have undefined or unreliable FPR/TPR and should be excluded
+    from gap calculations.
+    """
+    mask = (stats_df["n_pos"] < min_class_n) | (stats_df["n_neg"] < min_class_n)
+    return stats_df.index[mask].tolist()
 
 
 def equalized_odds_gap(stats_df: pd.DataFrame) -> dict[str, float]:

@@ -5,7 +5,13 @@ from typing import Any
 from fastapi import APIRouter, HTTPException, Query
 
 from app.dependencies import df_available, load_df
-from toxicity_fairness.metrics.fairness import fairness_report, group_stats
+from toxicity_fairness.metrics.fairness import (
+    accuracy_gap,
+    demographic_parity_gap,
+    equalized_odds_gap,
+    group_stats,
+    skewed_groups,
+)
 
 router = APIRouter()
 
@@ -94,18 +100,34 @@ def get_metrics(  # noqa: B008
                 "n": int(row["n"]),
             })
 
-    # Fairness report
-    report_df = fairness_report(df.reset_index(drop=True)).reset_index()
+    # Fairness report — gap metrics computed only over well-represented subgroups
     report_rows = []
-    for _, row in report_df.iterrows():
-        report_rows.append({
-            "model": row["model"],
-            "overall_accuracy": row["overall_accuracy"],
-            "accuracy_gap": row["accuracy_gap"],
-            "dp_gap": row["dp_gap"],
-            "tpr_gap": row["tpr_gap"],
-            "fpr_gap": row["fpr_gap"],
-        })
+    all_skewed: set[str] = set()
+    for model_key, mdf in df.groupby("model"):
+        stats = group_stats(mdf.reset_index(drop=True))
+        bad = skewed_groups(stats)
+        all_skewed.update(bad)
+        clean = stats.drop(index=bad) if bad else stats
+        overall_acc = float((mdf["actual_label"] == mdf["predicted_label"]).mean())
+        if len(clean) >= 2:
+            eo = equalized_odds_gap(clean)
+            report_rows.append({
+                "model": _display(model_key),
+                "overall_accuracy": overall_acc,
+                "accuracy_gap": accuracy_gap(clean),
+                "dp_gap": demographic_parity_gap(clean),
+                "tpr_gap": eo["tpr_gap"],
+                "fpr_gap": eo["fpr_gap"],
+            })
+        else:
+            report_rows.append({
+                "model": _display(model_key),
+                "overall_accuracy": overall_acc,
+                "accuracy_gap": float("nan"),
+                "dp_gap": float("nan"),
+                "tpr_gap": float("nan"),
+                "fpr_gap": float("nan"),
+            })
 
     # Scatter: FPR vs FNR per group
     scatter: list[dict[str, Any]] = []
@@ -125,4 +147,5 @@ def get_metrics(  # noqa: B008
         "accuracy_by_group": by_group,
         "fairness_report": report_rows,
         "scatter_points": scatter,
+        "skewed_subgroups": sorted(all_skewed),
     })

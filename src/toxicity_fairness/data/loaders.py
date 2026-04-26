@@ -79,13 +79,15 @@ def load_hatexplain(
 
     # ClassLabel features may be decoded as ints (0=hatespeech, 1=normal,
     # 2=offensive) or strings depending on the datasets library version.
+    # numpy 2.0 removed np.int64's inheritance from Python int, so
+    # isinstance(v, int) is False for numpy scalars — use str check instead.
     _int_to_label: dict[int, str] = {0: "hatespeech", 1: "normal", 2: "offensive"}
 
     rows = []
     for _, row in df.iterrows():
         raw_votes = row["annotators"]["label"]
         label_votes: list[str] = [
-            _int_to_label[v] if isinstance(v, (int, float)) else v
+            v if isinstance(v, str) else _int_to_label[int(v)]
             for v in raw_votes
         ]
         majority = max(set(label_votes), key=label_votes.count)

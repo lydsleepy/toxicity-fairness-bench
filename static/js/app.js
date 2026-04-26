@@ -167,6 +167,7 @@ async function fetchAndRender() {
     renderTiles(data.accuracy_tiles);
     renderAccuracyChart(data.accuracy_by_group);
     renderFairnessTable(data.fairness_report);
+    renderFairnessSkewWarning(data.skewed_subgroups);
     renderScatterChart(data.scatter_points);
 
     const titleEl = document.getElementById('group-chart-title');
@@ -257,6 +258,22 @@ function renderFairnessTable(rows) {
   }).join('');
 
   el.innerHTML = `<table class="data-table"><thead>${header}</thead><tbody>${body}</tbody></table>`;
+}
+
+// ── Render: skew warning ───────────────────────────────────────────────────────
+function renderFairnessSkewWarning(skewed) {
+  const el = document.getElementById('fairness-skew-warning');
+  if (!el) return;
+  if (!skewed || skewed.length === 0) {
+    el.hidden = true;
+    return;
+  }
+  const count = skewed.length;
+  el.querySelector('.skew-msg').textContent =
+    `${count} subgroup${count !== 1 ? 's' : ''} excluded from gap metrics due to ` +
+    `insufficient class representation (fewer than 30 examples of either class): ` +
+    `${skewed.join(', ')}.`;
+  el.hidden = false;
 }
 
 // ── Render: FPR vs FNR scatter ─────────────────────────────────────────────────
