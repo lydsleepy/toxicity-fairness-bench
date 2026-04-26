@@ -104,6 +104,11 @@
           <p class="section-desc">Gap metrics across demographic subgroups — smaller values indicate greater fairness</p>
         </div>
 
+        <div class="alert alert-info">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="8"/><line x1="12" y1="12" x2="12" y2="16"/></svg>
+          <span>Gap metrics only include subgroups with at least 5 examples of each class. HateXplain's demographic annotations skew heavily toward toxic examples, so many identity slices lack enough non-toxic examples to produce reliable FPR and TPR estimates. Subgroups that don't meet this threshold are listed in the warning below when applicable, and appear as <em>n/a</em> in the table.</span>
+        </div>
+
         <div id="fairness-skew-warning" class="alert alert-warning" hidden>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
           <span class="skew-msg"></span>

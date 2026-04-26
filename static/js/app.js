@@ -271,7 +271,7 @@ function renderFairnessSkewWarning(skewed) {
   const count = skewed.length;
   el.querySelector('.skew-msg').textContent =
     `${count} subgroup${count !== 1 ? 's' : ''} excluded from gap metrics due to ` +
-    `insufficient class representation (fewer than 30 examples of either class): ` +
+    `insufficient class representation (fewer than 5 examples of either class): ` +
     `${skewed.join(', ')}.`;
   el.hidden = false;
 }
