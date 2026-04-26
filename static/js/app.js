@@ -315,6 +315,7 @@ function renderScatterChart(rows) {
 
   Plotly.react(el, [...traces, diagonal], baseLayout({
     height: 340,
+    margin: { l: 56, r: 16, t: 20, b: 48, pad: 0 },
     xaxis: { title: { text: 'False Positive Rate', font: { size: 11, color: '#98989d' } }, range: [-0.06, 1.06] },
     yaxis: { title: { text: 'False Negative Rate', font: { size: 11, color: '#98989d' } }, range: [-0.06, 1.06] },
   }), PLOTLY_CONFIG);

@@ -141,7 +141,7 @@ class TestSkewedGroups:
         assert len(skewed_groups(stats, min_class_n=2)) == 0
 
     def test_min_class_n_constant(self):
-        assert MIN_CLASS_N == 30
+        assert MIN_CLASS_N == 5
 
 
 class TestGapMetrics:

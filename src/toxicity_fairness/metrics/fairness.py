@@ -16,7 +16,7 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-MIN_CLASS_N = 30
+MIN_CLASS_N = 5
 
 
 def _binary(series: pd.Series) -> np.ndarray:
