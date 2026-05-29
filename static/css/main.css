@@ -4,32 +4,32 @@
 /* ── Design tokens ─────────────────────────────────────────────────────────── */
 :root {
   /* Color */
-  --c-primary:         #1a7a6e;
-  --c-primary-hover:   #155f56;
-  --c-primary-subtle:  rgba(26, 122, 110, 0.09);
-  --c-primary-ring:    rgba(26, 122, 110, 0.18);
+  --c-primary:         #7c6fcd;
+  --c-primary-hover:   #6b5ec0;
+  --c-primary-subtle:  rgba(124, 111, 205, 0.09);
+  --c-primary-ring:    rgba(124, 111, 205, 0.20);
   --c-surface:         #ffffff;
-  --c-surface-2:       #f5f5f7;
-  --c-surface-3:       #eeecf4;
-  --c-border:          rgba(0, 0, 0, 0.08);
-  --c-border-strong:   rgba(0, 0, 0, 0.14);
+  --c-surface-2:       #f3f3f6;
+  --c-surface-3:       #e9e9ef;
+  --c-border:          rgba(0, 0, 0, 0.07);
+  --c-border-strong:   rgba(0, 0, 0, 0.13);
   --c-text-1:          #1d1d1f;
   --c-text-2:          #6e6e73;
   --c-text-3:          #98989d;
   --c-danger:          #c0392b;
   --c-danger-subtle:   rgba(192, 57, 43, 0.08);
-  --c-safe:            #1a7a6e;
-  --c-safe-subtle:     rgba(26, 122, 110, 0.08);
+  --c-safe:            #4a7ebb;
+  --c-safe-subtle:     rgba(74, 126, 187, 0.08);
   --c-warn:            #b45309;
   --c-warn-subtle:     rgba(180, 83, 9, 0.08);
 
-  /* Chart palette */
-  --chart-1: #1a7a6e;
-  --chart-2: #C4899A;
-  --chart-3: #A89BB8;
-  --chart-4: #7FA8BC;
-  --chart-5: #B89AA8;
-  --chart-6: #9AADB8;
+  /* Chart palette — alternating blues and pinks */
+  --chart-1: #5b8dd9;
+  --chart-2: #d97b9e;
+  --chart-3: #3f72c4;
+  --chart-4: #c45882;
+  --chart-5: #82aee0;
+  --chart-6: #e8a4be;
 
   /* Typography */
   --font: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;

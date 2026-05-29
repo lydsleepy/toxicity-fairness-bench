@@ -7,7 +7,7 @@ const state = {
 };
 
 // ── Chart palette ──────────────────────────────────────────────────────────────
-const COLORS = ['#1a7a6e', '#C4899A', '#A89BB8', '#7FA8BC', '#B89AA8', '#9AADB8'];
+const COLORS = ['#5b8dd9', '#d97b9e', '#3f72c4', '#c45882', '#82aee0', '#e8a4be'];
 const FONT   = "'DM Sans', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif";
 
 // ── Plotly base layout ─────────────────────────────────────────────────────────
