@@ -31,6 +31,7 @@ ANALYZER_MAP = {
     "perspective": ("toxicity_fairness.analyzers.perspective", "PerspectiveAnalyzer"),
     "gemini":      ("toxicity_fairness.analyzers.gemini",      "GeminiAnalyzer"),
     "claude":      ("toxicity_fairness.analyzers.claude",      "ClaudeAnalyzer"),
+    "cohere":      ("toxicity_fairness.analyzers.cohere",      "CohereAnalyzer")
 }
 
 

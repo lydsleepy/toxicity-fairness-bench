@@ -5,13 +5,18 @@ from pathlib import Path
 
 import pandas as pd
 
-_PARQUET = Path(__file__).resolve().parent.parent / "results" / "raw_results.parquet"
+_RESULTS_DIR = Path(__file__).resolve().parent.parent / "results"
+
+_DATASETS = {
+    "primary": _RESULTS_DIR / "raw_results.parquet",
+    "cohere_500": _RESULTS_DIR / "cohere_500" / "raw_results.parquet",
+}
+
+@lru_cache(maxsize=len(_DATASETS))
+def load_df(dataset: str = "primary") -> pd.DataFrame:
+    return pd.read_parquet(_DATASETS[dataset])
 
 
-@lru_cache(maxsize=1)
-def load_df() -> pd.DataFrame:
-    return pd.read_parquet(_PARQUET)
-
-
-def df_available() -> bool:
-    return _PARQUET.exists()
+def df_available(dataset: str = "primary") -> bool:
+    path = _DATASETS.get(dataset)
+    return path is not None and path.exists()

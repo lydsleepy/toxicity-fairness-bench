@@ -7,9 +7,15 @@ Data Visualization Website Deployed at: https://toxicity-fairness-bench.up.railw
 
 Compares **Google Perspective API** and **Anthropic Claude** across multiple
 protected attributes, reporting standard fairness metrics (equalized odds,
-demographic parity, FPR parity) alongside accuracy. Google Gemini is
-supported by the framework but excluded from the published benchmark due to
-free-tier rate limits — see [docs/gemini-rate-limits.md](docs/gemini-rate-limits.md).
+demographic parity, FPR parity) alongside accuracy. Google Gemini and
+Cohere's Command R7B are also supported by the framework. Gemini is
+excluded from the published benchmark due to free-tier rate limits, see
+[docs/gemini-rate-limits.md](docs/gemini-rate-limits.md). Cohere is
+benchmarked separately at a smaller sample size (n=500 vs. n=1,000) because
+of trial-key quota limits, and it is deliberately excluded from the Live
+Scorer tab because Cohere trial keys are not licensed for production or
+public-facing use, see [docs/cohere-rate-limits.md](docs/cohere-rate-limits.md).
+The dashboard's "Dataset" selector switches between the two views.
 
 ---
 
@@ -27,6 +33,25 @@ fairness gaps across all three attributes.*
 
 See [`notebooks/analysis.ipynb`](notebooks/analysis.ipynb) for full
 confusion matrices, equalized odds plots, and per-subgroup breakdowns.
+
+### Cohere comparison (separate n=500 run)
+
+Cohere's Command R7B was added after the original benchmark was published.
+Trial API keys cap chat calls at 1,000 per month, so Cohere was benchmarked
+on the first 500 rows of the same seed=42 HateXplain draw (500 calls, zero
+errors) instead of the full 1,000. See
+[docs/cohere-rate-limits.md](docs/cohere-rate-limits.md) for the rate-limit
+math and the confidence-interval cost of the smaller sample.
+
+At n=500, demographic subgroup counts fall below the 5-example-per-class
+threshold for Gender, Race/Ethnicity, and Religion, for every model
+compared at that sample size, not just Cohere. Gap metrics for those three
+attributes are unavailable in this view. Only overall accuracy is
+meaningfully comparable across all four models at n=500. Use the
+dashboard's "Dataset" selector to switch between "Published Benchmark
+(n=1,000)" (Perspective and Claude, full gap metrics) and "Cohere
+Comparison (n=500)" (all four models, gap metrics limited to the "Other"
+category).
 
 ---
 
@@ -84,7 +109,8 @@ toxicity-fairness-bench/
 │   │   ├── base.py
 │   │   ├── perspective.py
 │   │   ├── gemini.py
-│   │   └── claude.py
+│   │   ├── claude.py
+│   │   └── cohere.py
 │   ├── metrics/fairness.py     # group_stats, fairness_report, gap metrics
 │   ├── data/loaders.py         # load_hatexplain(), load_jigsaw()
 │   └── utils/cache.py          # Parquet cache keyed by (dataset, model, sample)
@@ -96,7 +122,9 @@ toxicity-fairness-bench/
 │   ├── analysis.ipynb          # Full benchmark analysis with charts
 │   └── bias_analysis.ipynb     # Original class assignment (preserved)
 └── results/
-    └── raw_results.parquet     # Pre-computed benchmark results (committed)
+    ├── raw_results.parquet         # Published benchmark (n=1,000): Perspective + Claude
+    └── cohere_500/
+        └── raw_results.parquet     # Cohere comparison (n=500): all four models
 ```
 
 ---
@@ -107,10 +135,17 @@ toxicity-fairness-bench/
 |---|---|---|
 | Google Perspective | [perspectiveapi.com](https://perspectiveapi.com) | Yes (1 QPS) |
 | Anthropic Claude | [console.anthropic.com](https://console.anthropic.com) | Pay-as-you-go |
-| Google Gemini | [aistudio.google.com](https://aistudio.google.com) | Yes — see [rate limit notes](docs/gemini-rate-limits.md) |
+| Google Gemini | [aistudio.google.com](https://aistudio.google.com) | Yes, see [rate limit notes](docs/gemini-rate-limits.md) |
+| Cohere | [dashboard.cohere.com](https://dashboard.cohere.com) | Trial key, see [rate limit notes](docs/cohere-rate-limits.md) |
 
 Copy `.env.example` to `.env` and fill in your keys. Keys are never
-committed — `.env` is in `.gitignore`.
+committed, `.env` is in `.gitignore`.
+
+`COHERE_API_KEY` is required to run `scripts/run_benchmark.py --models
+cohere` locally. It is not required on the Railway deployment. Cohere is
+intentionally excluded from the Live Scorer's API surface (see above), so
+the deployed app never calls Cohere's API and never needs this key set as
+a Railway environment variable.
 
 ---
 
@@ -156,7 +191,8 @@ All 26 tests pass without API keys. CI runs on every push via GitHub Actions
 ## Tech stack
 
 Python 3.11 · FastAPI · Uvicorn · Plotly.js · pandas · scikit-learn ·
-anthropic · google-genai · google-api-python-client · tenacity · pytest · GitHub Actions
+anthropic · google-genai · google-api-python-client · cohere · tenacity ·
+pytest · GitHub Actions
 
 ---
 

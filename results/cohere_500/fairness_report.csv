@@ -1,0 +1,2 @@
+model,overall_accuracy,accuracy_gap,dp_gap,tpr_gap,fpr_gap
+cohere/command-r7b-12-2024,0.644,1.0,1.0,1.0,0.75

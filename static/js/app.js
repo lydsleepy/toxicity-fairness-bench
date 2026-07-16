@@ -4,6 +4,7 @@
 const state = {
   selectedModels: new Set(),
   selectedAttr: '',
+  dataset: 'primary',
 };
 
 // ── Chart palette ──────────────────────────────────────────────────────────────
@@ -48,9 +49,14 @@ const PLOTLY_CONFIG = { responsive: true, displayModeBar: false };
 
 // ── Init ───────────────────────────────────────────────────────────────────────
 async function init() {
+  attachListeners();
+  await loadFiltersAndRender();
+  }
+
+async function loadFiltersAndRender() {
   let filters;
   try {
-    const res = await fetch('/api/filters');
+    const res = await fetch(`/api/filters?dataset=${state.dataset}`);
     filters = await res.json();
   } catch (err) {
     showError(`Could not reach the API: ${err.message}`);
@@ -67,9 +73,14 @@ async function init() {
     return;
   }
 
+  document.getElementById('model-filters').innerHTML = '';
+  state.selectedModels = new Set();
   buildModelFilters(filters.models);
+
+  const attrSelect = document.getElementById('attr-select');
+  attrSelect.innerHTML = '';
   buildAttrSelect(filters.protected_attributes);
-  attachListeners();
+
   await fetchAndRender();
 }
 
@@ -144,6 +155,13 @@ function attachListeners() {
   document.getElementById('score-input').addEventListener('keydown', e => {
     if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) runScorer();
   });
+
+  // Dataset selector
+  document.getElementById('dataset-select').addEventListener('change', e => {
+    state.dataset = e.target.value;
+    loadFiltersAndRender();
+  });
+
 }
 
 // ── Fetch & render ─────────────────────────────────────────────────────────────
@@ -158,6 +176,7 @@ async function fetchAndRender() {
     const params = new URLSearchParams();
     state.selectedModels.forEach(m => params.append('models', m));
     if (state.selectedAttr) params.set('attribute', state.selectedAttr);
+    params.set('dataset', state.dataset);
 
     const data = await fetch(`/api/metrics?${params}`).then(r => {
       if (!r.ok) throw new Error(`HTTP ${r.status}`);
@@ -374,6 +393,7 @@ function displayModel(key) {
     'perspective': 'Perspective',
     'claude/claude-haiku-4-5-20251001': 'Claude Haiku',
     'gemini': 'Gemini',
+    'cohere/command-r7b-12-2024': 'Cohere Command R7B',
   };
   return map[key] || key.split('/').pop().replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 }

@@ -31,6 +31,17 @@
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </span>
         </div>
+
+        <span class="nav-section-label" style="margin-top:28px;">Dataset</span>
+        <div class="select-wrapper">
+          <select id="dataset-select" class="select" aria-label="Select dataset">
+            <option value="primary">Published Benchmark (n=1000)</option>
+            <option value="cohere_500">Cohere Comparison (n=500)</option>
+          </select>
+          <span class="select-arrow" aria-hidden="true">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </div>
       </nav>
 
       <div class="sidebar-footer">
@@ -138,7 +149,7 @@
 
         <div class="section-header">
           <h2 class="section-title">Live Scorer</h2>
-          <p class="section-desc">Score any text against all available models in real time using live API calls</p>
+          <p class="section-desc">Score any text against all available models (except Cohere) in real time using live API calls</p>
         </div>
 
         <div class="card scorer-card">

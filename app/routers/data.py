@@ -19,6 +19,7 @@ _LABEL_MAP = {
     "perspective": "Perspective",
     "claude/claude-haiku-4-5-20251001": "Claude Haiku",
     "gemini": "Gemini",
+    "cohere/command-r7b-12-2024": "Cohere Command R7B",
 }
 
 
@@ -43,11 +44,11 @@ def _clean(obj: Any) -> Any:
 
 
 @router.get("/filters")
-def get_filters() -> dict:
-    if not df_available():
+def get_filters(dataset: str = Query(default="primary")) -> dict: # noqa: B008
+    if not df_available(dataset):
         return {"models": [], "protected_attributes": [], "error": None}
     try:
-        df = load_df()
+        df = load_df(dataset)
         models = sorted(df["model"].unique().tolist())
         attrs = sorted(df["protected_attribute"].dropna().unique().tolist())
         return {"models": models, "protected_attributes": attrs, "error": None}
@@ -58,15 +59,16 @@ def get_filters() -> dict:
 @router.get("/metrics")
 def get_metrics(  # noqa: B008
     models: list[str] = Query(default=[]),  # noqa: B008
-    attribute: str = Query(default=""),  # noqa: B008
+    attribute: str = Query(default=""), # noqa: B008
+    dataset: str = Query(default="primary") # noqa: B008
 ) -> dict[str, Any]:
-    if not df_available():
+    if not df_available(dataset):
         raise HTTPException(
             status_code=503,
             detail="Benchmark results not found. Run the benchmark first.",
         )
 
-    df = load_df()
+    df = load_df(dataset)
 
     if attribute:
         df = df[df["protected_attribute"] == attribute]

@@ -27,7 +27,10 @@ _ANALYZER_MAP = {
         "Gemini",
     ),
 }
-
+# cohere is deliberately not registered here. CohereAnalyzer only runs
+# in the offline benchmark (see /api/metrics). Cohere trial keys prohibit
+# production/public-facing use, and this is live on a public Railway
+# deployment. dont add without a paid Cohere key.
 
 def _run_analyzer(key: str, text: str) -> dict[str, Any]:
     module_path, class_name, display_name = _ANALYZER_MAP[key]

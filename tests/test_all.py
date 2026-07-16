@@ -9,6 +9,7 @@ import pandas as pd
 import pytest
 
 from toxicity_fairness.analyzers.base import AnalysisResult, BaseAnalyzer
+from toxicity_fairness.analyzers.cohere import CohereAnalyzer
 from toxicity_fairness.analyzers.gemini import GeminiAnalyzer
 from toxicity_fairness.metrics.fairness import (
     MIN_CLASS_N,
@@ -209,3 +210,19 @@ class TestResultCache:
         cache.save(key, sample_results_df)
         cache.clear(key)
         assert not cache.exists(key)
+
+
+class TestCohereParser:
+    @pytest.mark.parametrize("raw,expected", [
+        ("0.8",                              0.8),
+        ("0.0",                              0.0),
+        ("1.0",                              1.0),
+        ("1",                                1.0),
+        ("0",                                0.0),
+        ("The score is 0.7 out of 1.",       0.7),
+        ("I'd rate this 0.7 out of 1",       0.7),
+        ("not a number",                     None),
+        ("",                                 None),
+    ])
+    def test_parse_score(self, raw, expected):
+        assert CohereAnalyzer._parse_score(raw) == expected
