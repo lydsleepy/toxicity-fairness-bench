@@ -23,13 +23,17 @@ The dashboard's "Dataset" selector switches between the two views.
 
 | Model | Overall Accuracy | Gender Gap | Race Gap | Religion Gap |
 |---|---|---|---|---|
-| Perspective API | 61% | 16 pp | 57 pp | 44 pp |
-| Claude Haiku | 66% | 9 pp | 26 pp | 21 pp |
+| Perspective API | 67.4% | 11.6 pp | 29.4 pp | n/a |
+| Claude Haiku | 77.1% | 12.0 pp | 17.5 pp | n/a |
 
 *"Gap" = max accuracy difference between any two subgroups within that
-attribute (95% bootstrap CI). Smaller = fairer. Dataset: HateXplain,
-1,000-sample draw, seed 42. Claude achieves both higher accuracy and smaller
-fairness gaps across all three attributes.*
+attribute (95% bootstrap CI), computed only over subgroups with at least 5
+examples of each class. Smaller = fairer. Dataset: HateXplain, 1,000-sample
+draw, seed 42. Claude achieves higher overall accuracy and a smaller
+Race/Ethnicity gap. The Gender gap is roughly tied between the two models.
+The Religion gap is not shown here because only one of the two religion
+subgroups in this sample ("Islam") has enough non-toxic examples to compute
+a reliable rate, so no comparison is possible with the current sample size.*
 
 See [`notebooks/analysis.ipynb`](notebooks/analysis.ipynb) for full
 confusion matrices, equalized odds plots, and per-subgroup breakdowns.

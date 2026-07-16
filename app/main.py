@@ -46,41 +46,6 @@ async def _startup_diagnostics() -> None:
     log.warning("=== END DIAGNOSTICS ===")
 
 
-@app.get("/api/debug")
-async def debug() -> dict:
-    import sys
-
-    import pandas as pd
-
-    results_dir = ROOT / "results"
-
-    parquet_read_ok = False
-    parquet_shape = None
-    parquet_error = None
-    try:
-        df = pd.read_parquet(_PARQUET)
-        parquet_read_ok = True
-        parquet_shape = list(df.shape)
-    except Exception as exc:
-        parquet_error = str(exc)
-
-    return {
-        "cwd": os.getcwd(),
-        "file": __file__,
-        "root": str(ROOT),
-        "parquet_path": str(_PARQUET),
-        "parquet_exists": _PARQUET.exists(),
-        "parquet_read_ok": parquet_read_ok,
-        "parquet_shape": parquet_shape,
-        "parquet_error": parquet_error,
-        "python_version": sys.version,
-        "results_contents": (
-            [str(p) for p in results_dir.iterdir()] if results_dir.exists() else []
-        ),
-        "root_dirs": sorted(p.name for p in ROOT.iterdir() if p.is_dir()),
-    }
-
-
 @app.get("/")
 async def index(request: Request):
     return _templates.TemplateResponse(request, "index.html")
