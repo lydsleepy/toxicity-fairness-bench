@@ -121,7 +121,7 @@ toxicity-fairness-bench/
 ├── scripts/
 │   ├── run_benchmark.py        # CLI: runs APIs, saves results/raw_results.parquet
 │   └── dashboard.py            # Legacy Streamlit app (preserved)
-├── tests/                      # 26 unit tests — no API keys required
+├── tests/                      # 40 unit tests — no API keys required
 ├── notebooks/
 │   ├── analysis.ipynb          # Full benchmark analysis with charts
 │   └── bias_analysis.ipynb     # Original class assignment (preserved)
@@ -187,7 +187,7 @@ pytest tests/ -v
 pytest tests/ --cov=src --cov-report=term-missing
 ```
 
-All 26 tests pass without API keys. CI runs on every push via GitHub Actions
+All 40 tests pass without API keys. CI runs on every push via GitHub Actions
 (Python 3.11 and 3.12).
 
 ---
